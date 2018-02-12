@@ -14,7 +14,7 @@ class CategoryFactory(DjangoModelFactory):
     name = Sequence(lambda n: 'Category{0}'.format(n))
 
 
-class GlucoseFactory(DjangoModelFactory):
+class SubstanceFactory(DjangoModelFactory):
     FACTORY_FOR = Substance
 
     user = SubFactory(UserFactory)
