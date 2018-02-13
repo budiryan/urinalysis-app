@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "29073cc0d886fe83742af8e77b3ef106842a57918bd78beadeb5e663c458470e"
+            "sha256": "fa14ffc24f56280a328e63cad8b90c6ba5a9a795e60edbc09709db5579376702"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -34,6 +34,19 @@
             ],
             "version": "==2.0.2"
         },
+        "django-timezone-field": {
+            "hashes": [
+                "sha256:8d368d15f19d39c887cb59606a4e5897b7366c7552cae3b1da421bc939696968"
+            ],
+            "version": "==2.0"
+        },
+        "djangorestframework": {
+            "hashes": [
+                "sha256:1f6baf40ed456ed2af6bd1a4ff8bbc3503cebea16509993aea2b7085bc097766",
+                "sha256:9f9e94e8d22b100ed3a43cee8c47a7ff7b185e778a1f2da9ec5c73fc4e081b87"
+            ],
+            "version": "==3.7.7"
+        },
         "factory-boy": {
             "hashes": [
                 "sha256:be2abc8092294e4097935a29b4e37f5b9ed3e4205e2e32df215c0315b625995e",
@@ -43,10 +56,10 @@
         },
         "faker": {
             "hashes": [
-                "sha256:91c3e79db508f6e2b8ff3d3099fee0967c95ce02caa1f4028096641696336fc0",
-                "sha256:9da4c829d5592202a614d2db3c3e05d17684f5b590b7dbd6d7e70dc1053213a6"
+                "sha256:732ae449678a5c205ebc99e7e816f12eba6d6d1b02bd04d27ccf7edb2f4e6250",
+                "sha256:0857a92773c9cc6356c4c0c2aaa6f6ec83be94fc14fc0fd9e31904498d6fd388"
             ],
-            "version": "==0.8.10"
+            "version": "==0.8.11"
         },
         "gunicorn": {
             "hashes": [

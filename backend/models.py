@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
+from django.conf import settings
+from timezone_field import TimeZoneField
 
 
 # Create your models here.
@@ -61,14 +63,15 @@ class SubstanceManager(models.Manager):
             .annotate(avg_value=models.Avg('value'))\
             .order_by('record_date')
 
-
+# Model for storing test result
 class Substance(TimeStampedModel):
     objects = SubstanceManager()
 
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    unit = models.ForeignKey('Unit', on_delete=models.CASCADE)
     value = models.PositiveIntegerField(validators=[MaxValueValidator(54054),
                                                     MinValueValidator(0)])
-    category = models.ForeignKey('Category', on_delete=models.PROTECT)
+    category = models.ForeignKey('Category', on_delete=models.CASCADE)
     record_date = models.DateField('Date')
     record_time = models.TimeField('Time')
     notes = models.TextField('Notes', null=False, blank=True, default='')
@@ -76,9 +79,32 @@ class Substance(TimeStampedModel):
     def __unicode__(self):
         return str(self.value)
 
+    class Meta:
+        ordering = ['-record_date', '-record_time']
 
+# Model for storing substance type. e.g.: Glucose, Urine Color, Ketone, Protein, etc
 class Category(models.Model):
     name = models.CharField(unique=True, max_length=255)
 
     def __unicode__(self):
         return self.name
+
+# Model for storing unit types, each type
+class Unit(models.Model):
+    name = models.CharField(unique=True, max_length=10, default='mg/dl')
+    def __unicode__(self):
+        return self.name
+
+
+class UserSettings(TimeStampedModel):
+    """
+    Model to store additional user settings and preferences. Extends User
+    model.
+    """
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='settings')
+
+    time_zone = TimeZoneField(default=settings.TIME_ZONE)
+
+    def username(self):
+        return self.user.username
+
