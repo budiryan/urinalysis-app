@@ -25,7 +25,7 @@ SECRET_KEY = '431q5zusvbkknctu0hpdki5l2te19+c$_v@-)a9&5-1@89%-2y'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://shrouded-fjord-53645.herokuapp.com/', ' https://shrouded-fjord-53645.herokuapp.com/api']
 
 
 # Application definition
@@ -59,9 +59,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-CORS_ORIGIN_WHITELIST = (
-    'localhost:3000/'
-)
 
 CORS_ORIGIN_WHITELIST = (
     'localhost:3000/'
