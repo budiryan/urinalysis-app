@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from django.conf import settings
 from timezone_field import TimeZoneField
 
@@ -67,7 +67,7 @@ class SubstanceManager(models.Manager):
 class Substance(TimeStampedModel):
     objects = SubstanceManager()
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, on_delete=models.CASCADE)
     unit = models.ForeignKey('Unit', on_delete=models.CASCADE)
     value = models.PositiveIntegerField(validators=[MaxValueValidator(54054),
                                                     MinValueValidator(0)])
@@ -96,15 +96,15 @@ class Unit(models.Model):
         return self.name
 
 
-class UserSettings(TimeStampedModel):
-    """
-    Model to store additional user settings and preferences. Extends User
-    model.
-    """
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='settings')
-
-    time_zone = TimeZoneField(default=settings.TIME_ZONE)
-
-    def username(self):
-        return self.user.username
+# class UserSettings(TimeStampedModel):
+#     """
+#     Model to store additional user settings and preferences. Extends User
+#     model.
+#     """
+#     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='settings')
+#
+#     time_zone = TimeZoneField(default=settings.TIME_ZONE)
+#
+#     def username(self):
+#         return self.user.username
 

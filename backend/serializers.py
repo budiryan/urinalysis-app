@@ -6,7 +6,7 @@ class SubstanceSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
             'id',
-            'user',
+            # 'user',
             'unit',
             'value',
             'category',

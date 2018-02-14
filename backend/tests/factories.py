@@ -5,21 +5,22 @@ from factory.fuzzy import FuzzyInteger, FuzzyNaiveDateTime
 
 from django.contrib.auth.models import User
 
-from ..models import Substance, Category, UserSettings, Unit
+# from ..models import Substance, Category, UserSettings, Unit
+from ..models import Substance, Category, Unit
 
 
-class UserFactory(DjangoModelFactory):
-    class Meta:
-        model = User
-
-    username = Sequence(lambda n: 'user{0}'.format(n))
-
-
-class UserSettingsFactory(DjangoModelFactory):
-    class Meta:
-        model = UserSettings
-
-    user = SubFactory(UserFactory)
+# class UserFactory(DjangoModelFactory):
+#     class Meta:
+#         model = User
+#
+#     username = Sequence(lambda n: 'user{0}'.format(n))
+#
+#
+# class UserSettingsFactory(DjangoModelFactory):
+#     class Meta:
+#         model = UserSettings
+#
+#     user = SubFactory(UserFactory)
 
 
 class CategoryFactory(DjangoModelFactory):
@@ -41,7 +42,7 @@ class SubstanceFactory(DjangoModelFactory):
     class Meta:
         model = Substance
 
-    user = SubFactory(UserFactory)
+    # user = SubFactory(UserFactory)
     unit = SubFactory(UnitFactory)
     value = FuzzyInteger(0, 100)
     category = SubFactory(CategoryFactory)

@@ -9,28 +9,28 @@ from ...tests.factories import SubstanceFactory
 
 
 class Command(BaseCommand):
-    args = '<username> <substance type> <substance unit type>'
+    args = '<substance type> <substance unit type>'
     help = 'Populate substance table with random dummy data.'
 
     def add_arguments(self, parser):
-        parser.add_argument('username')
+        # parser.add_argument('username')
         parser.add_argument('substance_type')
         parser.add_argument('substance_unit')
 
     def handle(self, *args, **options):
-        username = options['username']
+        # username = options['username']
         substance_type = options['substance_type'].lower()
         substance_unit = options['substance_unit'].lower()
 
-        try:
-            user = User.objects.get(username=username)
-        except ObjectDoesNotExist:
-            user = User.objects.create(username=username)
-            user.first_name = 'Budi'
-            user.last_name = 'Ryan'
-            user.email = 'budiryan@gmail.com'
-            user.set_password('demo')
-            user.save()
+        # try:
+        #     user = User.objects.get(username=username)
+        # except ObjectDoesNotExist:
+        #     user = User.objects.create(username=username)
+        #     user.first_name = 'Budi'
+        #     user.last_name = 'Ryan'
+        #     user.email = 'budiryan@gmail.com'
+        #     user.set_password('demo')
+        #     user.save()
 
         try:
             category = Category.objects.get(name=substance_type)
@@ -43,14 +43,15 @@ class Command(BaseCommand):
             unit = Unit.objects.create(name=substance_unit)
 
         # Delete existing data.
-        Substance.objects.filter(user=user).delete()
+        Substance.objects.filter().delete()
+        # Substance.objects.delete()
 
         end_date = date.today()
         start_date = end_date - timedelta(days=30)
         for i in self.get_date_list(start_date, end_date):
             for _ in range(4):
                 SubstanceFactory(
-                    user=user,
+                    # user=user,
                     unit=unit,
                     category=category,
                     record_date=i
