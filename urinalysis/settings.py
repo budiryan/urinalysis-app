@@ -25,7 +25,7 @@ SECRET_KEY = '431q5zusvbkknctu0hpdki5l2te19+c$_v@-)a9&5-1@89%-2y'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://shrouded-fjord-53645.herokuapp.com/', ' https://shrouded-fjord-53645.herokuapp.com/api']
+ALLOWED_HOSTS = ['localhost', 'http://urinalysis.herokuapp.com/api', 'http://urinalysis.herokuapp.com/']
 
 
 # Application definition
