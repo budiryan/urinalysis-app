@@ -1,1 +1,1 @@
-web: python manage.py runserver
+web: gunicorn urinalysis.wsgi --log-file -
