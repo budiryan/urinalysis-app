@@ -1,17 +1,8 @@
 from rest_framework import serializers
-from . import models
+from .models import Category
 
 
-class SubstanceSerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        fields = (
-            'id',
-            # 'user',
-            'unit',
-            'value',
-            'category',
-            'record_date',
-            'record_time',
-            'notes'
-        )
-        model = models.Substance
+        fields = '__all__'
+        model = Category
