@@ -36,18 +36,21 @@ class SubstanceView(generics.ListCreateAPIView):
 
 
 class SubstanceInstanceView(generics.RetrieveAPIView):
+    renderer_classes = [renderers.JSONRenderer]
     model = Substance
     serializer_class = serializers.SubstanceSerializer
     queryset = Substance.objects.all()
 
 
 class CategoryInstanceView(generics.RetrieveAPIView):
+    renderer_classes = [renderers.JSONRenderer]
     model = Category
     serializer_class = serializers.CategorySerializer
     queryset = Category.objects.all()
 
 
 class UnitInstanceView(generics.RetrieveAPIView):
+    renderer_classes = [renderers.JSONRenderer]
     model = Unit
     serializer_class = serializers.CategorySerializer
     queryset = Unit.objects.all()
