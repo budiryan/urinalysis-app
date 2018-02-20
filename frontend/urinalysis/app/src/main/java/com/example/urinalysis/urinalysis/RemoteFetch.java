@@ -16,9 +16,12 @@ public class RemoteFetch {
     private static final String URINALYSIS_API =
             "https://urinalysis.herokuapp.com/api";
 
-    public static JSONObject getJSON(){
+    public static JSONObject getAvgPerDay(int days, String category){
         try {
-            URL url = new URL(String.format(URINALYSIS_API));
+            String daysString = String.valueOf(days);
+            String requestUrl = URINALYSIS_API + "/getavgperday" + "?days=" + daysString + "&category=" + category;
+            URL url = new URL(String.format(requestUrl));
+
             HttpURLConnection connection =
                     (HttpURLConnection)url.openConnection();
 
@@ -26,22 +29,20 @@ public class RemoteFetch {
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(connection.getInputStream()));
 
+
             StringBuffer json = new StringBuffer(1024);
             String tmp = "";
             while((tmp=reader.readLine())!=null)
                 json.append(tmp).append("\n");
             reader.close();
 
+
             JSONObject data = new JSONObject(json.toString());
+            Log.d("tag", json.toString());
 
             // This value will be 404 if the request was not
             // successful
 
-
-            Log.d("tag", "run till here");
-            if(data.getInt("cod") != 200){
-                return null;
-            }
 
             return data;
         }catch(Exception e){
