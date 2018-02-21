@@ -7,6 +7,7 @@ import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.TableLayout;
 
@@ -27,11 +28,12 @@ public class MainActivity extends AppCompatActivity {
     private Float[] yAxis;
     private String[] xAxis;
     private static final String TAG = "MainActivity";
-    private final String appTitle = "FYP Urinalysis";
 
     private SectionPageAdapter mSectionPageAdapter;
 
     private ViewPager mViewPager;
+
+    private Toolbar toolbar;
 
 
     private Handler handler = new Handler() {
@@ -53,9 +55,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(appTitle);
         setContentView(R.layout.activity_main);
         Log.d(TAG, "onCreate: starting...");
+
 
         mViewPager = (ViewPager) findViewById(R.id.container);
         setupViewPager(mViewPager);
@@ -63,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitle("FYP Urinalysis");
 
 
 

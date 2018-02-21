@@ -6,11 +6,14 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/editText"
+        android:id="@+id/textTab1"
         android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:text="History Fragment"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="134dp" />
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:text="Tab1"
+        android:textSize="25sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
