@@ -40,9 +40,6 @@ public class RemoteFetch {
             JSONObject data = new JSONObject(json.toString());
             Log.d("tag", json.toString());
 
-            // This value will be 404 if the request was not
-            // successful
-
 
             return data;
         }catch(Exception e){
