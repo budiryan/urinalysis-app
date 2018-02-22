@@ -33,34 +33,19 @@ public class OverviewFragment extends Fragment {
     private static final String TAG = "OverviewFragment";
 
     private LineChart chart;
-    private Float[] yAxis;
-    private String[] xAxis;
+    private Float[] yVal;
+    private String[] xVal;
+
+    private List<String> xValues = new ArrayList<>();
 
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            drawChart();
+            drawChart(chart);
         }
     };
 
-    public void drawChart(){
-        chart = getView().findViewById(R.id.chart);
-        chart.setNoDataText("");
-
-        List<Entry> entries;
-
-        entries = new ArrayList<Entry>();
-
-        for(int i = 0 ; i < xAxis.length ; i++)
-            entries.add(new Entry(i, yAxis[i]));
-
-        LineDataSet dataSet = new LineDataSet(entries, "Label"); // add entries to dataset
-
-        LineData lineData = new LineData(dataSet);
-//        LineData lineData = new LineData(generateLineDataSet(yVals, ContextCompat.getColor(getContext(), R.color.urinalysis_pink)));
-
-        chart.setData(lineData);
-
+    public void drawChart(LineChart chart){
         final XAxis xAxis = chart.getXAxis();
         xAxis.setDrawGridLines(false);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -77,13 +62,18 @@ public class OverviewFragment extends Fragment {
         chart.setBackgroundColor(Color.parseColor("#FFFFFF"));
         chart.setGridBackgroundColor(Color.parseColor("#FFFFFF"));
 
+        LineData data;
+        data = generateData();
+        chart.setData(data);
+
+
 
         chart.invalidate();
     }
 
     private void getAvgPerDayData(){
-        // Get the averages data from Backend
-        final JSONObject json = RemoteFetch.getAvgPerDay(14, "glucose");
+        // Get the averages data from Backend Server, depending on the queried substance type
+        final JSONObject json = RemoteFetch.getAvgPerDay(20, "glucose");
 
         if(json == null)
             Log.d("tag", "json is null");
@@ -93,9 +83,9 @@ public class OverviewFragment extends Fragment {
                 JSONArray tempDates = json.getJSONArray("dates");
                 int lengthDates = tempDates.length();
                 if (lengthDates > 0) {
-                    xAxis = new String[lengthDates];
+                    xVal = new String[lengthDates];
                     for (int i = 0; i < lengthDates; i++) {
-                        xAxis[i] = tempDates.getString(i);
+                        xVal[i] = tempDates.getString(i);
                     }
                 }
 
@@ -103,9 +93,9 @@ public class OverviewFragment extends Fragment {
                 JSONArray tempValues = json.getJSONArray("values");
                 int lengthValues = tempValues.length();
                 if (lengthValues > 0) {
-                    yAxis = new Float[lengthValues];
+                    yVal = new Float[lengthValues];
                     for (int i = 0; i < lengthValues; i++) {
-                        yAxis[i] = Float.parseFloat(tempValues.getString(i));
+                        yVal[i] = Float.parseFloat(tempValues.getString(i));
                     }
                 }
             }
@@ -117,11 +107,59 @@ public class OverviewFragment extends Fragment {
 
     }
 
+    private LineData generateData() {
+        List<Entry> yValEntry = new ArrayList<>();
+
+        // Day view
+        for (int i = 0; i < yVal.length; i++) {
+            yValEntry.add(new Entry(i, yVal[i]));
+        }
+
+        LineData data = new LineData(generateLineDataSet(yValEntry, ContextCompat.getColor(getContext(), R.color.urinalysis_pink)));
+        return data;
+    }
+
+
+    private LineDataSet generateLineDataSet(List<Entry> vals, int color) {
+        // create a dataset and give it a type
+        LineDataSet set1 = new LineDataSet(vals, "");
+        List<Integer> colors = new ArrayList<>();
+
+        if (color == ContextCompat.getColor(getContext(), R.color.urinalysis_pink)) {
+            for (Entry val : vals) {
+                if (val.getY() == (0)) {
+                    colors.add(Color.TRANSPARENT);
+                } else {
+                    colors.add(color);
+                }
+            }
+            set1.setCircleColors(colors);
+        } else {
+            set1.setCircleColor(color);
+        }
+
+        set1.setColor(color);
+        set1.setLineWidth(2f);
+        set1.setCircleSize(4f);
+        set1.setDrawCircleHole(true);
+        set1.disableDashedLine();
+        set1.setFillAlpha(255);
+        set1.setDrawFilled(true);
+        set1.setValueTextSize(0);
+        set1.setValueTextColor(Color.parseColor("#FFFFFF"));
+        set1.setFillDrawable(getResources().getDrawable(R.drawable.graph_gradient));
+        set1.setHighLightColor(ContextCompat.getColor(getContext(), R.color.urinalysis_gray_light));
+        set1.setCubicIntensity(0.2f);
+        return set1;
+    }
+
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.overview_fragment, container, false);
+        chart = view.findViewById(R.id.chart);
+        chart.setNoDataText("");
 
         getAvgPerDayData();
 

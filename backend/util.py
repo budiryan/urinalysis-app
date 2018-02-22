@@ -104,6 +104,5 @@ def get_avg_by_day(days, category):
     for avg in averages:
         rounded_value = round_value(avg['avg_value'])
         data['values'].append(rounded_value)
-        data['dates'].append(avg['record_date'])
-    print('data is: ', data)
+        data['dates'].append(avg['record_date'].strftime('%d/%m/%y'))
     return data
