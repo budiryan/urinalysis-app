@@ -1,5 +1,7 @@
 package com.example.urinalysis.urinalysis;
 
+import com.example.urinalysis.urinalysis.util.MyXAxisValueFormatter;
+
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
@@ -12,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -36,7 +39,6 @@ public class OverviewFragment extends Fragment {
     private Float[] yVal;
     private String[] xVal;
 
-    private List<String> xValues = new ArrayList<>();
 
     private Handler handler = new Handler() {
         @Override
@@ -45,35 +47,32 @@ public class OverviewFragment extends Fragment {
         }
     };
 
-    public void drawChart(LineChart chart){
-        final XAxis xAxis = chart.getXAxis();
-        xAxis.setDrawGridLines(false);
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.urinalysis_text_light));
-        xAxis.setAvoidFirstLastClipping(true);
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.overview_fragment, container, false);
+        chart = view.findViewById(R.id.chart);
+        chart.setNoDataText("");
 
-        YAxis leftAxis = chart.getAxisLeft();
-        leftAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.urinalysis_text_light));
-        leftAxis.disableGridDashedLine();
-        leftAxis.setDrawGridLines(false);
-        leftAxis.setDrawLimitLinesBehindData(true);
+        // Populate graph data from backend
+        getAvgPerDayData();
 
-        chart.getAxisRight().setEnabled(false);
-        chart.setBackgroundColor(Color.parseColor("#FFFFFF"));
-        chart.setGridBackgroundColor(Color.parseColor("#FFFFFF"));
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                getAvgPerDayData();
+                handler.sendEmptyMessage(0);
+            }
+        };
+        Thread getAvgDataThread = new Thread(r);
 
-        LineData data;
-        data = generateData();
-        chart.setData(data);
-
-
-
-        chart.invalidate();
+        getAvgDataThread.start();
+        return view;
     }
 
     private void getAvgPerDayData(){
         // Get the averages data from Backend Server, depending on the queried substance type
-        final JSONObject json = RemoteFetch.getAvgPerDay(20, "glucose");
+        final JSONObject json = RemoteFetch.getAvgPerDay(14, "glucose");
 
         if(json == null)
             Log.d("tag", "json is null");
@@ -104,6 +103,54 @@ public class OverviewFragment extends Fragment {
             }
 
         }
+
+    }
+
+    public void drawChart(LineChart chart){
+        final XAxis xAxis = chart.getXAxis();
+        xAxis.setDrawGridLines(false);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.urinalysis_text_light));
+        xAxis.setAvoidFirstLastClipping(true);
+
+        YAxis leftAxis = chart.getAxisLeft();
+        leftAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.urinalysis_text_light));
+        leftAxis.disableGridDashedLine();
+        leftAxis.setDrawGridLines(false);
+        leftAxis.setDrawLimitLinesBehindData(true);
+
+        chart.getAxisRight().setEnabled(false);
+        chart.setBackgroundColor(Color.parseColor("#FFFFFF"));
+        chart.setGridBackgroundColor(Color.parseColor("#FFFFFF"));
+
+        setData();
+
+    }
+
+
+    private void setData() {
+        LineData data = new LineData();
+        data = generateData();
+
+        if (data.getEntryCount() != 0) {
+            chart.setData(data);
+        } else {
+            chart.setData(null);
+        }
+        chart.setPinchZoom(true);
+        chart.setHardwareAccelerationEnabled(true);
+        chart.setNoDataTextColor(getResources().getColor(R.color.urinalysis_text));
+        chart.animateY(1000, Easing.EasingOption.EaseOutCubic);
+        chart.invalidate();
+        chart.notifyDataSetChanged();
+        chart.fitScreen();
+        chart.setDescription(null);
+        chart.setVisibleXRangeMaximum(20);
+        chart.moveViewToX(data.getXMax());
+
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setGranularity(1f); // minimum axis-step (interval) is 1
+        xAxis.setValueFormatter(new MyXAxisValueFormatter(xVal));
 
     }
 
@@ -154,25 +201,5 @@ public class OverviewFragment extends Fragment {
     }
 
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.overview_fragment, container, false);
-        chart = view.findViewById(R.id.chart);
-        chart.setNoDataText("");
 
-        getAvgPerDayData();
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                getAvgPerDayData();
-                handler.sendEmptyMessage(0);
-            }
-        };
-        Thread getAvgDataThread = new Thread(r);
-
-        getAvgDataThread.start();
-        return view;
-    }
 }

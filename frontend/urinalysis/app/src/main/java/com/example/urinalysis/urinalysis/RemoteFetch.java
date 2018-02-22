@@ -1,4 +1,5 @@
-package com.example.urinalysis.urinalysis; /**
+package com.example.urinalysis.urinalysis;
+/*
  * Created by budiryan on 2/15/18.\
  * Class for interacting with Django backend server
  */

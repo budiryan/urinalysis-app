@@ -11,8 +11,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
-    private SectionPageAdapter mSectionPageAdapter;
-
     private ViewPager mViewPager;
 
     private Toolbar toolbar;
