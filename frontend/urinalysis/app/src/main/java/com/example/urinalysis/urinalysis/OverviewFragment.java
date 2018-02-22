@@ -1,17 +1,22 @@
 package com.example.urinalysis.urinalysis;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
+import com.example.urinalysis.urinalysis.util.RemoteFetch;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -34,12 +39,14 @@ import java.util.List;
 
 public class OverviewFragment extends Fragment {
     private static final String TAG = "OverviewFragment";
-
+    private static final String URINALYSIS_API = "https://urinalysis.herokuapp.com/api";
     private LineChart chart;
     private Float[] yVal;
     private String[] xVal;
+    private List<String> categories;
 
 
+    @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -54,13 +61,36 @@ public class OverviewFragment extends Fragment {
         chart = view.findViewById(R.id.chart);
         chart.setNoDataText("");
 
-        // Populate graph data from backend
-        getAvgPerDayData();
+        // Spinner element
+        Spinner spinner = (Spinner) view.findViewById(R.id.chart_spinner_range);
 
+        // Spinner click listener
+//        spinner.setOnItemSelectedListener(getActivity());
+
+        // Spinner Drop down elements
+        List<String> categories2 = new ArrayList<String>();
+        categories2.add("Automobile");
+        categories2.add("Business Services");
+        categories2.add("Computers");
+        categories2.add("Education");
+        categories2.add("Personal");
+        categories2.add("Travel");
+
+        // Creating adapter for spinner
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, categories2);
+
+        // Drop down layout style - list view with radio button
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // attaching data adapter to spinner
+        spinner.setAdapter(dataAdapter);
+
+        // Populate graph data from backend
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                getAvgPerDayData();
+                getAllCategories();
+                getAvgPerDayData(14, "glucose");
                 handler.sendEmptyMessage(0);
             }
         };
@@ -70,12 +100,58 @@ public class OverviewFragment extends Fragment {
         return view;
     }
 
-    private void getAvgPerDayData(){
-        // Get the averages data from Backend Server, depending on the queried substance type
-        final JSONObject json = RemoteFetch.getAvgPerDay(14, "glucose");
+    private void getAllCategories(){
+        // Get the substance categories from Backend Server
+        String requestUrl = URINALYSIS_API + "/category";
+        categories = new ArrayList<String>();
+        final StringBuffer data = RemoteFetch.get(requestUrl);
+        JSONArray json;
+        try {
+            json = new JSONArray(data.toString());
+        }
+        catch (Exception e){
+            json = null;
+            Log.e(TAG, "RemoteFetch getAllCategories error", e);
+        }
+
 
         if(json == null)
-            Log.d("tag", "json is null");
+            Log.d(TAG, "json is null in getAllCategories");
+        else {
+            try {
+                // Parse all categories from json
+                for (int i = 0; i < json.length(); i++) {
+                    JSONObject jsonobject = json.getJSONObject(i);
+                    String name = jsonobject.getString("name");
+                    name = name.substring(0, 1).toUpperCase() + name.substring(1);
+                    categories.add(name);
+                }
+
+            }
+            catch(Exception e){
+                Log.e(TAG, "GetAllCategories Error", e);
+            }
+
+        }
+    }
+
+    private void getAvgPerDayData(int days, String category){
+        // Get the averages data from Backend Server, depending on the queried substance type
+        String daysString = String.valueOf(days);
+        String requestUrl = URINALYSIS_API + "/getavgperday" + "?days=" + daysString + "&category=" + category;
+        final StringBuffer data = RemoteFetch.get(requestUrl);
+        JSONObject json;
+        try{
+            json = new JSONObject(data.toString());
+        }
+        catch (Exception e){
+            json = null;
+            Log.e(TAG, "getAvgPerDayData Json Parsing Error");
+        }
+        Log.d(TAG, json.toString());
+
+        if(json == null)
+            Log.d(TAG, "json is null");
         else {
             try {
                 // Parse Dates
@@ -99,7 +175,7 @@ public class OverviewFragment extends Fragment {
                 }
             }
             catch(Exception e){
-                Log.e("tag", "Handler Main Activity error", e);
+                Log.e(TAG, "GetAvgPerDayData Error", e);
             }
 
         }

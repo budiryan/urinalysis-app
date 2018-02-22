@@ -1,4 +1,4 @@
-package com.example.urinalysis.urinalysis;
+package com.example.urinalysis.urinalysis.util;
 /*
  * Created by budiryan on 2/15/18.\
  * Class for interacting with Django backend server
@@ -14,13 +14,11 @@ import java.net.URL;
 import org.json.JSONObject;
 
 public class RemoteFetch {
-    private static final String URINALYSIS_API =
-            "https://urinalysis.herokuapp.com/api";
+    private static final String TAG = "RemoteFetch";
 
-    public static JSONObject getAvgPerDay(int days, String category){
+    public static StringBuffer get(String requestUrl){
         try {
-            String daysString = String.valueOf(days);
-            String requestUrl = URINALYSIS_API + "/getavgperday" + "?days=" + daysString + "&category=" + category;
+
             URL url = new URL(String.format(requestUrl));
 
             HttpURLConnection connection =
@@ -37,15 +35,11 @@ public class RemoteFetch {
                 json.append(tmp).append("\n");
             reader.close();
 
-
-            JSONObject data = new JSONObject(json.toString());
-            Log.d("tag", json.toString());
-
-
-            return data;
+            return json;
         }catch(Exception e){
-            Log.e("tag", "I got an error", e);
+            Log.e(TAG, "Error at RemoteFetch", e);
             return null;
         }
     }
+
 }
