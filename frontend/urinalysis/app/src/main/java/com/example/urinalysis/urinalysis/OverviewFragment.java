@@ -1,7 +1,5 @@
 package com.example.urinalysis.urinalysis;
 
-import com.example.urinalysis.urinalysis.util.MyXAxisValueFormatter;
-
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
@@ -16,11 +14,13 @@ import android.view.ViewGroup;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.example.urinalysis.urinalysis.util.MyXAxisValueFormatter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -123,13 +123,15 @@ public class OverviewFragment extends Fragment {
         chart.setBackgroundColor(Color.parseColor("#FFFFFF"));
         chart.setGridBackgroundColor(Color.parseColor("#FFFFFF"));
 
+        Legend legend = chart.getLegend();
+        legend.setEnabled(false);
         setData();
 
     }
 
 
     private void setData() {
-        LineData data = new LineData();
+        LineData data;
         data = generateData();
 
         if (data.getEntryCount() != 0) {
