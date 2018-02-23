@@ -1,5 +1,10 @@
 import datetime
-from .models import Substance, SubstanceManager, Unit
+
+from django.db.models import Avg
+
+from .models import Substance
+
+import numpy as np
 
 
 def get_client_ip(request):
@@ -97,7 +102,6 @@ def get_avg_by_category(days):
 
 def get_avg_by_day(category):
     # Get the date of the newest data on the table
-    # now = datetime.datetime.now().date()
     now = Substance.objects.all()[0].record_date
     earliest = Substance.objects.all().reverse()[0].record_date
     averages = Substance.objects.avg_by_day(earliest, now, category)
@@ -113,4 +117,31 @@ def get_avg_by_day(category):
         data['unit'] = temp_unit.name
     except:
         data['unit'] = ''
+    return data
+
+
+def get_stats(category):
+    # Get the date of the newest data on the table
+    data = {'avg': '','std': '',
+            'latest':'', 'latest_date':'','highest':'', 'highest_date':'', 'lowest':'', 'lowest_date':'','unit': ''}
+    try:
+        all_substances = Substance.objects.all().filter(category__name=category)
+        values = np.array([f.value for f in all_substances])
+        record_date = np.array([f.record_date for f in all_substances])
+
+        data['avg'] = np.average(values)
+        data['std'] = round(np.std(values), 2)
+        data['latest'] = values[0]
+        data['latest_date'] = '{0}/{1}/{2:02}'.format(record_date[0].day, record_date[0].month, record_date[0].year % 100)
+        data['highest'] = np.max(values)
+        data['highest_date'] = '{0}/{1}/{2:02}'.format(record_date[np.argmax(values)].day,
+                                                       record_date[np.argmax(values)].month,
+                                                       record_date[np.argmax(values)].year % 100)
+        data['lowest'] = np.min(values)
+        data['lowest_date'] = '{0}/{1}/{2:02}'.format(record_date[np.argmin(values)].day,
+                                                      record_date[np.argmin(values)].month,
+                                                      record_date[np.argmin(values)].year % 100)
+        data['unit'] = all_substances[0].unit.name
+    except:
+        print('query error, data will be blank')
     return data

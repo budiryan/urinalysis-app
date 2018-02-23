@@ -6,6 +6,7 @@ from . import views
 
 urlpatterns = [
     path('getavgperday', views.GetAvgPerDayView.as_view()),
+    path('getstats', views.GetStats.as_view()),
     path('category', views.CategoryView.as_view()),
     path('category/<int:pk>/', views.CategoryInstanceView.as_view()),
     path('substance', views.SubstanceView.as_view()),

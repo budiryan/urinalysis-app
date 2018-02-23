@@ -54,8 +54,6 @@ class SubstanceManager(models.Manager):
         """
         Group objects by record date and take the average of the values.
         """
-        print('start date: ', start_date)
-        print('end date: ', end_date)
         data = self.by_date(start_date, end_date)
         return data.values('record_date').annotate(avg_value=models.Avg('value')).order_by('record_date') \
             .filter(category__name=category)

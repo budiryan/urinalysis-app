@@ -70,10 +70,19 @@ class UnitInstanceView(generics.RetrieveAPIView):
 
 
 class GetAvgPerDayView(views.APIView):
-    # renderer_classes = [renderers.JSONRenderer]
+    renderer_classes = [renderers.JSONRenderer]
 
     def get(self, request):
         category = request.query_params.get('category')
         queryset = util.get_avg_by_day(category)
+        return Response(queryset)
+
+
+class GetStats(views.APIView):
+    renderer_classes = [renderers.JSONRenderer]
+
+    def get(self, request):
+        category = request.query_params.get('category')
+        queryset = util.get_stats(category)
         return Response(queryset)
 
