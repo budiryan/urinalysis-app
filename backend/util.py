@@ -95,11 +95,12 @@ def get_avg_by_category(days):
     return data
 
 
-def get_avg_by_day(days, category):
+def get_avg_by_day(category):
     # Get the date of the newest data on the table
     # now = datetime.datetime.now().date()
     now = Substance.objects.all()[0].record_date
-    averages = Substance.objects.avg_by_day((now - datetime.timedelta(days=int(days) - 1)), now, category)
+    earliest = Substance.objects.all().reverse()[0].record_date
+    averages = Substance.objects.avg_by_day(earliest, now, category)
     data = {'dates': [], 'values': [], 'unit': ''}
     for avg in averages:
         rounded_value = round_value(avg['avg_value'])

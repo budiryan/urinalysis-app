@@ -20,6 +20,5 @@ public interface Api {
     Call<List<Category>> getCategories();
 
     @GET("getavgperday")
-    Call<AveragesPerDay> getAveragePerDay(@Query("days") int days,
-                                          @Query("category") String category);
+    Call<AveragesPerDay> getAveragePerDay(@Query("category") String category);
 }

@@ -103,7 +103,7 @@ public class OverviewFragment extends Fragment {
                 String item = parent.getItemAtPosition(position).toString();
 
                 // Call to get graph data
-                Call<AveragesPerDay> call_graph = api.getAveragePerDay(NUM_DAYS,
+                Call<AveragesPerDay> call_graph = api.getAveragePerDay(
                         item.substring(0, 1).toLowerCase() + item.substring(1));
                 // Call the backend asynchronously
                 call_graph.enqueue(new Callback<AveragesPerDay>() {

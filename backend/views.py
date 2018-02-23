@@ -74,7 +74,6 @@ class GetAvgPerDayView(views.APIView):
 
     def get(self, request):
         category = request.query_params.get('category')
-        days = request.query_params.get('days')
-        queryset = util.get_avg_by_day(days, category)
+        queryset = util.get_avg_by_day(category)
         return Response(queryset)
 
