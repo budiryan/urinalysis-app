@@ -73,28 +73,9 @@ public class OverviewFragment extends Fragment {
 
         api = retrofit.create(Api.class);
 
-        // Call to get graph data
-        Call<AveragesPerDay> call = api.getAveragePerDay(NUM_DAYS, "glucose");
-        // Call the backend asynchronously
-        call.enqueue(new Callback<AveragesPerDay>() {
-            @Override
-            public void onResponse(Call<AveragesPerDay> call, Response<AveragesPerDay> response) {
-                AveragesPerDay avgPerDay = response.body();
-                xVal = avgPerDay.getDates();
-                yVal = avgPerDay.getValues();
-                drawChart(chart);
-            }
-
-            @Override
-            public void onFailure(Call<AveragesPerDay> call, Throwable t) {
-                Toast.makeText(getActivity().getApplicationContext(),
-                        t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
         // Call to get the list of categories
-        Call <List<Category>> call2 = api.getCategories();
-        call2.enqueue(new Callback<List<Category>>() {
+        Call <List<Category>> call_categories = api.getCategories();
+        call_categories.enqueue(new Callback<List<Category>>() {
             @Override
             public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
                 List<Category> categoryBody = response.body();
@@ -114,6 +95,7 @@ public class OverviewFragment extends Fragment {
                         t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+
         // Spinner click listener
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view,
@@ -122,11 +104,25 @@ public class OverviewFragment extends Fragment {
                 // On selecting a spinner item
                 String item = parent.getItemAtPosition(position).toString();
 
+                // Call to get graph data
+                Call<AveragesPerDay> call_graph = api.getAveragePerDay(NUM_DAYS,
+                        item.substring(0, 1).toLowerCase() + item.substring(1));
+                // Call the backend asynchronously
+                call_graph.enqueue(new Callback<AveragesPerDay>() {
+                    @Override
+                    public void onResponse(Call<AveragesPerDay> call, Response<AveragesPerDay> response) {
+                        AveragesPerDay avgPerDay = response.body();
+                        xVal = avgPerDay.getDates();
+                        yVal = avgPerDay.getValues();
+                        drawChart(chart);
+                    }
 
-                // Showing selected spinner item
-                Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
-
-
+                    @Override
+                    public void onFailure(Call<AveragesPerDay> call, Throwable t) {
+                        Toast.makeText(getActivity().getApplicationContext(),
+                                t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override

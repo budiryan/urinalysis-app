@@ -19,8 +19,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # username = options['username']
-        substance_type = options['substance_type'].lower()
-        substance_unit = options['substance_unit'].lower()
+        substance_type = options['substance_type']
+        substance_unit = options['substance_unit']
 
         # try:
         #     user = User.objects.get(username=username)
@@ -33,14 +33,14 @@ class Command(BaseCommand):
         #     user.save()
 
         try:
-            category = Category.objects.get(name=substance_type)
+            category = Category.objects.get(name=substance_type.lower())
         except ObjectDoesNotExist:
-            category = Category.objects.create(name=substance_type)
+            category = Category.objects.create(name=substance_type.lower())
 
         try:
-            unit = Unit.objects.get(name=substance_unit)
+            unit = Unit.objects.get(name=substance_unit.lower())
         except ObjectDoesNotExist:
-            unit = Unit.objects.create(name=substance_unit)
+            unit = Unit.objects.create(name=substance_unit.lower())
 
         # Delete existing data.
         # Substance.objects.filter().delete()

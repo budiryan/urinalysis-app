@@ -44,7 +44,7 @@ class SubstanceFactory(DjangoModelFactory):
 
     # user = SubFactory(UserFactory)
     unit = SubFactory(UnitFactory)
-    value = FuzzyInteger(0, 10)
+    value = FuzzyInteger(0, 300)
     category = SubFactory(CategoryFactory)
     record_date = date.today()
     record_time = FuzzyNaiveDateTime(datetime.now() - timedelta(hours=24))
