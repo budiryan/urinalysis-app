@@ -46,7 +46,6 @@ public class OverviewFragment extends Fragment {
     private Float[] yVal;
     private String[] xVal;
     private String unit;
-    private final Integer NUM_DAYS = 14;
 
     // Data for the spinner
     private ArrayList<String> categories;
