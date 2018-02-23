@@ -49,6 +49,19 @@ class CategoryInstanceView(generics.RetrieveAPIView):
     queryset = Category.objects.all()
 
 
+class UnitView(generics.ListCreateAPIView):
+    renderer_classes = [renderers.JSONRenderer]
+    serializer_class = serializers.UnitSerializer
+
+    def get_queryset(self):
+        num_instance = self.request.query_params.get('num')
+        if num_instance is not None:
+            queryset = Unit.objects.all()[:int(num_instance)]
+        else:
+            queryset = Unit.objects.all()
+        return queryset
+
+
 class UnitInstanceView(generics.RetrieveAPIView):
     renderer_classes = [renderers.JSONRenderer]
     model = Unit

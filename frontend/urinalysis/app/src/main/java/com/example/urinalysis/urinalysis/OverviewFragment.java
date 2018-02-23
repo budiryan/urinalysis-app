@@ -64,9 +64,6 @@ public class OverviewFragment extends Fragment {
         // Spinner element
         Spinner spinner = (Spinner) view.findViewById(R.id.chart_spinner_range);
 
-        // Spinner click listener
-//        spinner.setOnItemSelectedListener(getActivity());
-
         // Spinner Drop down elements
         List<String> categories2 = new ArrayList<String>();
         categories2.add("Automobile");

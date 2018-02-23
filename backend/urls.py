@@ -10,5 +10,6 @@ urlpatterns = [
     path('category/<int:pk>/', views.CategoryInstanceView.as_view()),
     path('substance', views.SubstanceView.as_view()),
     path('substance/<int:pk>/', views.SubstanceInstanceView.as_view()),
+    path('unit/', views.UnitView.as_view()),
     path('unit/<int:pk>/', views.UnitInstanceView.as_view()),
 ]
