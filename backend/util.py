@@ -123,24 +123,32 @@ def get_avg_by_day(category):
 def get_stats(category):
     # Get the date of the newest data on the table
     data = {'avg': '','std': '',
-            'latest':'', 'latest_date':'','highest':'', 'highest_date':'', 'lowest':'', 'lowest_date':'','unit': ''}
+            'latest':'', 'latest_date':'', 'latest_time':'',
+            'highest':'', 'highest_date':'', 'highest_time':'',
+            'lowest':'', 'lowest_date':'', 'lowest_time':'','unit': ''}
     try:
         all_substances = Substance.objects.all().filter(category__name=category)
         values = np.array([f.value for f in all_substances])
         record_date = np.array([f.record_date for f in all_substances])
+        record_time = np.array([f.record_time for f in all_substances])
 
         data['avg'] = np.average(values)
         data['std'] = round(np.std(values), 2)
         data['latest'] = values[0]
         data['latest_date'] = '{0}/{1}/{2:02}'.format(record_date[0].day, record_date[0].month, record_date[0].year % 100)
+        data['latest_time'] = record_time[0].replace(microsecond=0)
         data['highest'] = np.max(values)
         data['highest_date'] = '{0}/{1}/{2:02}'.format(record_date[np.argmax(values)].day,
                                                        record_date[np.argmax(values)].month,
                                                        record_date[np.argmax(values)].year % 100)
+        data['highest_time'] = record_time[np.argmax(values)].replace(microsecond=0)
+
         data['lowest'] = np.min(values)
         data['lowest_date'] = '{0}/{1}/{2:02}'.format(record_date[np.argmin(values)].day,
                                                       record_date[np.argmin(values)].month,
                                                       record_date[np.argmin(values)].year % 100)
+        data['lowest_time'] = record_time[np.argmin(values)].replace(microsecond=0)
+
         data['unit'] = all_substances[0].unit.name
     except:
         print('query error, data will be blank')
