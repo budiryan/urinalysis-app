@@ -1,13 +1,10 @@
 package com.example.urinalysis.urinalysis;
 
 import android.graphics.Color;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,14 +18,12 @@ import com.example.urinalysis.urinalysis.models.Category;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.example.urinalysis.urinalysis.util.MyXAxisValueFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,16 +59,16 @@ public class OverviewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.overview_fragment, container, false);
+
+        // Some initalization
         chart = view.findViewById(R.id.chart);
         chart.setNoDataText("");
         categories = new ArrayList<String>();
         final Spinner spinner = view.findViewById(R.id.spinner1);
-
         retrofit = new Retrofit.Builder()
                 .baseUrl(Api.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-
         api = retrofit.create(Api.class);
 
         // Call to get the list of categories
@@ -131,7 +126,7 @@ public class OverviewFragment extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
+                //Do nothing
             }
         });
 
@@ -139,7 +134,6 @@ public class OverviewFragment extends Fragment {
 
         return view;
     }
-
 
 
     public void drawChart(LineChart chart){
@@ -237,7 +231,4 @@ public class OverviewFragment extends Fragment {
         set1.setCubicIntensity(0.2f);
         return set1;
     }
-
-
-
 }
