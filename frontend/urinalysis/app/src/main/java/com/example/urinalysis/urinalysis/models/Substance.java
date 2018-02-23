@@ -20,4 +20,28 @@ public class Substance {
         this.recordDate = recordDate;
         this.recordTime = recordTime;
     }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getUnitName() {
+        return unitName;
+    }
+
+    public Integer getValue() {
+        return value;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public String getRecordDate() {
+        return recordDate;
+    }
+
+    public String getRecordTime() {
+        return recordTime;
+    }
 }

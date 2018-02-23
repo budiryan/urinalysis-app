@@ -5,11 +5,19 @@ package com.example.urinalysis.urinalysis.models;
  */
 
 public class AveragesPerDay {
-    private Float[] Values;
-    private String[] Dates;
+    private Float[] values;
+    private String[] dates;
 
     public AveragesPerDay(Float[] values, String[] dates) {
-        Values = values;
-        Dates = dates;
+        values = values;
+        dates = dates;
+    }
+
+    public Float[] getValues() {
+        return values;
+    }
+
+    public String[] getDates() {
+        return dates;
     }
 }
