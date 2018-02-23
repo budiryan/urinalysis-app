@@ -7,6 +7,7 @@ package com.example.urinalysis.urinalysis.models;
 public class AveragesPerDay {
     private Float[] values;
     private String[] dates;
+    private String unit;
 
     public AveragesPerDay(Float[] values, String[] dates) {
         values = values;
@@ -19,5 +20,9 @@ public class AveragesPerDay {
 
     public String[] getDates() {
         return dates;
+    }
+
+    public String getUnit() {
+        return unit;
     }
 }

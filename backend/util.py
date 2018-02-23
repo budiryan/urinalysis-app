@@ -1,5 +1,5 @@
 import datetime
-from .models import Substance, SubstanceManager
+from .models import Substance, SubstanceManager, Unit
 
 
 def get_client_ip(request):
@@ -100,11 +100,16 @@ def get_avg_by_day(days, category):
     # now = datetime.datetime.now().date()
     now = Substance.objects.all()[0].record_date
     averages = Substance.objects.avg_by_day((now - datetime.timedelta(days=int(days) - 1)), now, category)
-    data = {'dates': [], 'values': []}
+    data = {'dates': [], 'values': [], 'unit': ''}
     for avg in averages:
         rounded_value = round_value(avg['avg_value'])
         data['values'].append(rounded_value)
         date = avg['record_date']
         date = '{0}/{1}/{2:02}'.format(date.day, date.month, date.year % 100)
         data['dates'].append(date)
+    try:
+        temp_unit = Substance.objects.filter(category__name=category)[0].unit;
+        data['unit'] = temp_unit.name
+    except:
+        data['unit'] = ''
     return data

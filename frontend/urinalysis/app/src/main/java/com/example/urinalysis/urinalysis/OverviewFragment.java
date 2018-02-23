@@ -21,12 +21,14 @@ import com.example.urinalysis.urinalysis.models.Category;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.example.urinalysis.urinalysis.util.MyXAxisValueFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +50,7 @@ public class OverviewFragment extends Fragment {
     private LineChart chart;
     private Float[] yVal;
     private String[] xVal;
+    private String unit;
     private final Integer NUM_DAYS = 14;
 
     // Data for the spinner
@@ -114,6 +117,7 @@ public class OverviewFragment extends Fragment {
                         AveragesPerDay avgPerDay = response.body();
                         xVal = avgPerDay.getDates();
                         yVal = avgPerDay.getValues();
+                        unit = avgPerDay.getUnit();
                         drawChart(chart);
                     }
 
@@ -156,13 +160,12 @@ public class OverviewFragment extends Fragment {
         chart.setGridBackgroundColor(Color.parseColor("#FFFFFF"));
 
         Legend legend = chart.getLegend();
-        legend.setEnabled(false);
-        setData();
+        setChartData();
 
     }
 
 
-    private void setData() {
+    private void setChartData() {
         LineData data;
         data = generateData();
 
@@ -196,14 +199,15 @@ public class OverviewFragment extends Fragment {
             yValEntry.add(new Entry(i, yVal[i]));
         }
 
-        LineData data = new LineData(generateLineDataSet(yValEntry, ContextCompat.getColor(getContext(), R.color.urinalysis_pink)));
+        LineData data = new LineData(generateLineDataSet(yValEntry,
+                ContextCompat.getColor(getContext(), R.color.urinalysis_pink)));
         return data;
     }
 
 
     private LineDataSet generateLineDataSet(List<Entry> vals, int color) {
         // create a dataset and give it a type
-        LineDataSet set1 = new LineDataSet(vals, "");
+        LineDataSet set1 = new LineDataSet(vals, unit);
         List<Integer> colors = new ArrayList<>();
 
         if (color == ContextCompat.getColor(getContext(), R.color.urinalysis_pink)) {

@@ -70,7 +70,7 @@ class UnitInstanceView(generics.RetrieveAPIView):
 
 
 class GetAvgPerDayView(views.APIView):
-    renderer_classes = [renderers.JSONRenderer]
+    # renderer_classes = [renderers.JSONRenderer]
 
     def get(self, request):
         category = request.query_params.get('category')
