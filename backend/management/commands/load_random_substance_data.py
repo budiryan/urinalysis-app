@@ -43,7 +43,7 @@ class Command(BaseCommand):
             unit = Unit.objects.create(name=substance_unit)
 
         # Delete existing data.
-        Substance.objects.filter().delete()
+        # Substance.objects.filter().delete()
         # Substance.objects.delete()
 
         end_date = date.today()

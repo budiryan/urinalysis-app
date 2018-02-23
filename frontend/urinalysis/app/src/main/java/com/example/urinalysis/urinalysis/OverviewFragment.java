@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -42,10 +43,19 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class OverviewFragment extends Fragment {
     private static final String TAG = "OverviewFragment";
+
+    // For storing the chart data
     private LineChart chart;
     private Float[] yVal;
     private String[] xVal;
-    private List<String> categories;
+    private final Integer NUM_DAYS = 14;
+
+    // Data for the spinner
+    private ArrayList<String> categories;
+
+    // For calling the API through retrofit
+    private Api api;
+    private Retrofit retrofit;
 
     @Nullable
     @Override
@@ -53,16 +63,18 @@ public class OverviewFragment extends Fragment {
         View view = inflater.inflate(R.layout.overview_fragment, container, false);
         chart = view.findViewById(R.id.chart);
         chart.setNoDataText("");
+        categories = new ArrayList<String>();
+        final Spinner spinner = view.findViewById(R.id.spinner1);
 
-        Retrofit retrofit = new Retrofit.Builder()
+        retrofit = new Retrofit.Builder()
                 .baseUrl(Api.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        Api api = retrofit.create(Api.class);
+        api = retrofit.create(Api.class);
 
         // Call to get graph data
-        Call<AveragesPerDay> call = api.getAveragePerDay(20, "glucose");
+        Call<AveragesPerDay> call = api.getAveragePerDay(NUM_DAYS, "glucose");
         // Call the backend asynchronously
         call.enqueue(new Callback<AveragesPerDay>() {
             @Override
@@ -82,7 +94,6 @@ public class OverviewFragment extends Fragment {
 
         // Call to get the list of categories
         Call <List<Category>> call2 = api.getCategories();
-        categories = new ArrayList<String>();
         call2.enqueue(new Callback<List<Category>>() {
             @Override
             public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
@@ -91,6 +102,10 @@ public class OverviewFragment extends Fragment {
                     categories.add(c.getName().substring(0, 1).toUpperCase()
                             + c.getName().substring(1));
                 }
+                final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
+                        getActivity(), R.layout.spinner_item, categories);
+                spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
+                spinner.setAdapter(spinnerArrayAdapter);
             }
 
             @Override
@@ -99,24 +114,32 @@ public class OverviewFragment extends Fragment {
                         t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+        // Spinner click listener
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
 
-        // Spinner for choosing the category
-        Spinner spinner = (Spinner) view.findViewById(R.id.chart_spinner_range);
+                // On selecting a spinner item
+                String item = parent.getItemAtPosition(position).toString();
 
-        // Creating adapter for spinner
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_spinner_item, categories);
 
-        // Drop down layout style - list view with radio button
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                // Showing selected spinner item
+                Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
 
-        // attaching data adapter to spinner
-        spinner.setAdapter(dataAdapter);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
 
 
         return view;
     }
+
 
 
     public void drawChart(LineChart chart){
