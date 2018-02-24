@@ -65,8 +65,8 @@ class Substance(TimeStampedModel):
 
     # user = models.ForeignKey(User, on_delete=models.CASCADE)
     unit = models.ForeignKey('Unit', on_delete=models.CASCADE)
-    value = models.PositiveIntegerField(validators=[MaxValueValidator(54054),
-                                                    MinValueValidator(0)])
+    value = models.FloatField(validators=[MaxValueValidator(54054),
+                                          MinValueValidator(0)])
     category = models.ForeignKey('Category', on_delete=models.CASCADE)
     record_date = models.DateField('Date')
     record_time = models.TimeField('Time')

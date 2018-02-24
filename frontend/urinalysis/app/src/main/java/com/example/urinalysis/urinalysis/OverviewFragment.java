@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.urinalysis.urinalysis.models.AveragesPerDay;
 import com.example.urinalysis.urinalysis.models.Category;
+import com.example.urinalysis.urinalysis.models.Stats;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -53,6 +54,25 @@ public class OverviewFragment extends Fragment {
     // For calling the API through retrofit
     private Api api;
     private Retrofit retrofit;
+
+    // For the statistics stuff
+
+    /*
+      {
+      "avg": 151.0,
+      "std": 85.04,
+      "latest": 224,
+      "latest_date": "23/2/18",
+      "latest_time": "20:54:48",
+      "highest": 299,
+      "highest_date": "21/2/18",
+      "highest_time": "21:02:18",
+      "lowest": 0,
+      "lowest_date": "9/2/18",
+      "lowest_time": "10:51:01",
+      "unit": "mg/dl"
+       }
+     */
 
     @Nullable
     @Override
@@ -99,11 +119,11 @@ public class OverviewFragment extends Fragment {
                                        int position, long id) {
 
                 // On selecting a spinner item
-                String item = parent.getItemAtPosition(position).toString();
+                String category = parent.getItemAtPosition(position).toString();
 
                 // Call to get graph data
                 Call<AveragesPerDay> call_graph = api.getAveragePerDay(
-                        item.substring(0, 1).toLowerCase() + item.substring(1));
+                        category.substring(0, 1).toLowerCase() + category.substring(1));
                 // Call the backend asynchronously
                 call_graph.enqueue(new Callback<AveragesPerDay>() {
                     @Override
@@ -121,6 +141,22 @@ public class OverviewFragment extends Fragment {
                                 t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+
+                Call<Stats> call_stats = api.getStats(category.substring(0, 1).toLowerCase()
+                        + category.substring(1));
+                call_stats.enqueue(new Callback<Stats>() {
+                    @Override
+                    public void onResponse(Call<Stats> call, Response<Stats> response) {
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Stats> call, Throwable t) {
+                        Toast.makeText(getActivity().getApplicationContext(),
+                                t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
             }
 
             @Override

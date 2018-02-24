@@ -1,7 +1,5 @@
 import datetime
 
-from django.db.models import Avg
-
 from .models import Substance
 
 import numpy as np
