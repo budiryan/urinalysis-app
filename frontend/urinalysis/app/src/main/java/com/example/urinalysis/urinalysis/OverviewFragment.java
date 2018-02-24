@@ -5,12 +5,14 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.urinalysis.urinalysis.models.AveragesPerDay;
@@ -56,23 +58,17 @@ public class OverviewFragment extends Fragment {
     private Retrofit retrofit;
 
     // For the statistics stuff
-
-    /*
-      {
-      "avg": 151.0,
-      "std": 85.04,
-      "latest": 224,
-      "latest_date": "23/2/18",
-      "latest_time": "20:54:48",
-      "highest": 299,
-      "highest_date": "21/2/18",
-      "highest_time": "21:02:18",
-      "lowest": 0,
-      "lowest_date": "9/2/18",
-      "lowest_time": "10:51:01",
-      "unit": "mg/dl"
-       }
-     */
+    private Float avg;
+    private Float std;
+    private Float latest;
+    private String latestDate;
+    private String latestTime;
+    private Float highest;
+    private String highestDate;
+    private String highestTime;
+    private Float lowest;
+    private String lowestDate;
+    private String lowestTime;
 
     @Nullable
     @Override
@@ -124,7 +120,8 @@ public class OverviewFragment extends Fragment {
                 // Call to get graph data
                 Call<AveragesPerDay> call_graph = api.getAveragePerDay(
                         category.substring(0, 1).toLowerCase() + category.substring(1));
-                // Call the backend asynchronously
+
+                // Generate the graph
                 call_graph.enqueue(new Callback<AveragesPerDay>() {
                     @Override
                     public void onResponse(Call<AveragesPerDay> call, Response<AveragesPerDay> response) {
@@ -142,11 +139,45 @@ public class OverviewFragment extends Fragment {
                     }
                 });
 
+                // Fill in the statistics section below graph
                 Call<Stats> call_stats = api.getStats(category.substring(0, 1).toLowerCase()
                         + category.substring(1));
                 call_stats.enqueue(new Callback<Stats>() {
                     @Override
                     public void onResponse(Call<Stats> call, Response<Stats> response) {
+                        Stats statsDay = response.body();
+                        avg = statsDay.getAvg();
+                        std = statsDay.getStd();
+                        latest = statsDay.getLatest();
+                        latestDate = statsDay.getLatest_date();
+                        latestTime = statsDay.getLatest_time();
+                        highest = statsDay.getHighest();
+                        highestDate = statsDay.getHighest_date();
+                        highestTime = statsDay.getHighest_time();
+                        lowest = statsDay.getLowest();
+                        lowestDate = statsDay.getLowest_date();
+                        lowestTime = statsDay.getLowest_time();
+                        unit = statsDay.getUnit();
+
+                        // Fill in the attributes to the front end view
+                        TextView avgVal = getView().findViewById(R.id.average_value);
+                        TextView stdVal = getView().findViewById(R.id.std_value);
+                        TextView lowestVal = getView().findViewById(R.id.lowest_value);
+                        TextView lowestDateView = getView().findViewById(R.id.lowest_date);
+                        TextView highestVal = getView().findViewById(R.id.highest_value);
+                        TextView highestDateView = getView().findViewById(R.id.highest_date);
+                        TextView latestVal = getView().findViewById(R.id.last_reading_value);
+                        TextView latestDateView = getView().findViewById(R.id.last_reading_date);
+
+                        avgVal.setText(avg.toString() + " " + unit);
+                        stdVal.setText(std.toString() + " " + unit);
+                        lowestVal.setText(lowest.toString() + " " + unit);
+                        highestVal.setText(highest.toString() + " " + unit);
+                        latestVal.setText(latest.toString() + " " + unit);
+
+                        latestDateView.setText(latestDate + " " + latestTime);
+                        highestDateView.setText(highestDate + " " + highestTime);
+                        lowestDateView.setText(lowestDate + " " + lowestTime);
 
                     }
 

@@ -7,32 +7,32 @@ package com.example.urinalysis.urinalysis.models;
 public class Stats {
     private Float avg;
     private Float std;
-    private Integer latest;
-    private String latestDate;
-    private String latestTime;
-    private Integer highest;
-    private String highestDate;
-    private String highestTime;
-    private Integer lowest;
-    private String lowestDate;
-    private String lowestTime;
+    private Float latest;
+    private String latest_date;
+    private String latest_time;
+    private Float highest;
+    private String highest_date;
+    private String highest_time;
+    private Float lowest;
+    private String lowest_date;
+    private String lowest_time;
     private String unit;
 
-    public Stats(Float avg, Float std, Integer latest, String latestDate,
-                 String latestTime, Integer highest, String highestDate,
-                 String highestTime, Integer lowest, String lowestDate,
-                 String lowestTime, String unit) {
+
+    public Stats(Float avg, Float std, Float latest, String latest_date, String latest_time,
+                 Float highest, String highest_date, String highest_time, Float lowest,
+                 String lowest_date, String lowest_time, String unit) {
         this.avg = avg;
         this.std = std;
         this.latest = latest;
-        this.latestDate = latestDate;
-        this.latestTime = latestTime;
+        this.latest_date = latest_date;
+        this.latest_time = latest_time;
         this.highest = highest;
-        this.highestDate = highestDate;
-        this.highestTime = highestTime;
+        this.highest_date = highest_date;
+        this.highest_time = highest_time;
         this.lowest = lowest;
-        this.lowestDate = lowestDate;
-        this.lowestTime = lowestTime;
+        this.lowest_date = lowest_date;
+        this.lowest_time = lowest_time;
         this.unit = unit;
     }
 
@@ -44,40 +44,40 @@ public class Stats {
         return std;
     }
 
-    public Integer getLatest() {
+    public Float getLatest() {
         return latest;
     }
 
-    public String getLatestDate() {
-        return latestDate;
+    public String getLatest_date() {
+        return latest_date;
     }
 
-    public String getLatestTime() {
-        return latestTime;
+    public String getLatest_time() {
+        return latest_time;
     }
 
-    public Integer getHighest() {
+    public Float getHighest() {
         return highest;
     }
 
-    public String getHighestDate() {
-        return highestDate;
+    public String getHighest_date() {
+        return highest_date;
     }
 
-    public String getHighestTime() {
-        return highestTime;
+    public String getHighest_time() {
+        return highest_time;
     }
 
-    public Integer getLowest() {
+    public Float getLowest() {
         return lowest;
     }
 
-    public String getLowestDate() {
-        return lowestDate;
+    public String getLowest_date() {
+        return lowest_date;
     }
 
-    public String getLowestTime() {
-        return lowestTime;
+    public String getLowest_time() {
+        return lowest_time;
     }
 
     public String getUnit() {
