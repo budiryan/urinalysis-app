@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/overview_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -35,7 +34,7 @@
 
     <TextView
         android:layout_width="fill_parent"
-        android:layout_height="2px"
+        android:layout_height="1dp"
         android:layout_marginBottom="355dp"
         android:background="#DADADA"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -59,9 +58,10 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="16dp"
-            android:text="Latest:"
+            android:text="@string/latest"
             android:textColor="@color/urinalysis_text"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginStart="10dp" />
 
         <TextView
             android:id="@+id/last_reading_value"
@@ -69,8 +69,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="16dp"
-            android:text="100 mg/dL"
-            android:textColor="@color/urinalysis_text" />
+            android:textColor="@color/urinalysis_text"
+            android:layout_marginStart="8dp" />
 
         <TextView
             android:id="@+id/last_reading_date"
@@ -78,16 +78,17 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="16dp"
-            android:text="Thu, 22 December 2016"
-            android:gravity="right"
+            android:gravity="end"
             android:layout_marginRight="10dp"
-            android:textColor="@color/urinalysis_text_light" />
+            android:textColor="@color/urinalysis_text_light"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="8dp" />
 
     </LinearLayout>
 
     <TextView
         android:layout_width="fill_parent"
-        android:layout_height="2px"
+        android:layout_height="1dp"
         android:layout_marginBottom="295dp"
         android:layout_weight="1"
         android:background="#DADADA"
@@ -111,9 +112,10 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="16dp"
-            android:text="Highest:"
+            android:text="@string/highest"
             android:textColor="@color/urinalysis_text"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginStart="10dp" />
 
         <TextView
             android:id="@+id/highest_value"
@@ -121,8 +123,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="16dp"
-            android:text="100 mg/dL"
-            android:textColor="@color/urinalysis_text" />
+            android:textColor="@color/urinalysis_text"
+            android:layout_marginStart="8dp" />
 
         <TextView
             android:id="@+id/highest_date"
@@ -130,15 +132,16 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="16dp"
-            android:text="Thu, 22 December 2016"
-            android:gravity="right"
+            android:gravity="end"
             android:layout_marginRight="10dp"
-            android:textColor="@color/urinalysis_text_light" />
+            android:textColor="@color/urinalysis_text_light"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="8dp" />
     </LinearLayout>
 
     <TextView
         android:layout_width="fill_parent"
-        android:layout_height="2px"
+        android:layout_height="1dp"
         android:layout_marginBottom="235dp"
         android:layout_weight="1"
         android:background="#DADADA"
@@ -156,13 +159,14 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="10dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Lowest:"
+            android:text="@string/lowest"
             android:textColor="@color/urinalysis_text"
             android:textStyle="bold" />
 
@@ -172,8 +176,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="16dp"
-            android:text="100 mg/dL"
-            android:textColor="@color/urinalysis_text" />
+            android:textColor="@color/urinalysis_text"
+            android:layout_marginStart="8dp" />
 
         <TextView
             android:id="@+id/lowest_date"
@@ -181,15 +185,16 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="16dp"
-            android:text="Thu, 22 December 2016"
-            android:gravity="right"
+            android:gravity="end"
             android:layout_marginRight="10dp"
-            android:textColor="@color/urinalysis_text_light" />
+            android:textColor="@color/urinalysis_text_light"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="8dp" />
     </LinearLayout>
 
     <TextView
         android:layout_width="fill_parent"
-        android:layout_height="2px"
+        android:layout_height="1dp"
         android:layout_marginBottom="175dp"
         android:layout_weight="1"
         android:background="#DADADA"
@@ -213,9 +218,10 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="16dp"
-            android:text="Average:"
+            android:text="@string/average"
             android:textColor="@color/urinalysis_text"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginStart="10dp" />
 
         <TextView
             android:id="@+id/average_value"
@@ -223,14 +229,14 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="16dp"
-            android:text="100 mg/dL"
-            android:textColor="@color/urinalysis_text" />
+            android:textColor="@color/urinalysis_text"
+            android:layout_marginStart="8dp" />
 
     </LinearLayout>
 
     <TextView
         android:layout_width="fill_parent"
-        android:layout_height="2px"
+        android:layout_height="1dp"
         android:layout_marginBottom="115dp"
         android:layout_weight="1"
         android:background="#DADADA"
@@ -254,9 +260,10 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="16dp"
-            android:text="Standard Deviation:"
+            android:text="@string/standard_deviation"
             android:textColor="@color/urinalysis_text"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginStart="10dp" />
 
         <TextView
             android:id="@+id/std_value"
@@ -264,8 +271,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="16dp"
-            android:text="100 mg/dL"
-            android:textColor="@color/urinalysis_text" />
+            android:textColor="@color/urinalysis_text"
+            android:layout_marginStart="8dp" />
 
     </LinearLayout>
 

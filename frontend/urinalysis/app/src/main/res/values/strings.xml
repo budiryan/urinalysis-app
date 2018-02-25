@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">FYP Urinalysis</string>
+    <string name="standard_deviation">Standard Deviation:</string>
+    <string name="average">Average:</string>
+    <string name="lowest">Lowest:</string>
+    <string name="highest">Highest:</string>
+    <string name="latest">Latest:</string>
 </resources>

@@ -70,6 +70,16 @@ public class OverviewFragment extends Fragment {
     private String lowestDate;
     private String lowestTime;
 
+    // For the view of the statistics
+    private TextView avgVal;
+    private TextView stdVal;
+    private TextView lowestVal;
+    private TextView lowestDateView;
+    private TextView highestVal;
+    private TextView highestDateView;
+    private TextView latestVal;
+    private TextView latestDateView;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -85,6 +95,15 @@ public class OverviewFragment extends Fragment {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         api = retrofit.create(Api.class);
+
+        avgVal = view.findViewById(R.id.average_value);
+        stdVal = view.findViewById(R.id.std_value);
+        lowestVal = view.findViewById(R.id.lowest_value);
+        lowestDateView = view.findViewById(R.id.lowest_date);
+        highestVal = view.findViewById(R.id.highest_value);
+        highestDateView = view.findViewById(R.id.highest_date);
+        latestVal = view.findViewById(R.id.last_reading_value);
+        latestDateView = view.findViewById(R.id.last_reading_date);
 
         // Call to get the list of categories
         Call <List<Category>> call_categories = api.getCategories();
@@ -159,25 +178,15 @@ public class OverviewFragment extends Fragment {
                         lowestTime = statsDay.getLowest_time();
                         unit = statsDay.getUnit();
 
-                        // Fill in the attributes to the front end view
-                        TextView avgVal = getView().findViewById(R.id.average_value);
-                        TextView stdVal = getView().findViewById(R.id.std_value);
-                        TextView lowestVal = getView().findViewById(R.id.lowest_value);
-                        TextView lowestDateView = getView().findViewById(R.id.lowest_date);
-                        TextView highestVal = getView().findViewById(R.id.highest_value);
-                        TextView highestDateView = getView().findViewById(R.id.highest_date);
-                        TextView latestVal = getView().findViewById(R.id.last_reading_value);
-                        TextView latestDateView = getView().findViewById(R.id.last_reading_date);
+                        avgVal.setText(String.format("%s %s", avg.toString(), unit));
+                        stdVal.setText(String.format("%s %s", std.toString(), unit));
+                        lowestVal.setText(String.format("%s %s", lowest.toString(), unit));
+                        highestVal.setText(String.format("%s %s", highest.toString(), unit));
+                        latestVal.setText(String.format("%s %s", latest.toString(), unit));
 
-                        avgVal.setText(avg.toString() + " " + unit);
-                        stdVal.setText(std.toString() + " " + unit);
-                        lowestVal.setText(lowest.toString() + " " + unit);
-                        highestVal.setText(highest.toString() + " " + unit);
-                        latestVal.setText(latest.toString() + " " + unit);
-
-                        latestDateView.setText(latestDate + " " + latestTime);
-                        highestDateView.setText(highestDate + " " + highestTime);
-                        lowestDateView.setText(lowestDate + " " + lowestTime);
+                        latestDateView.setText(String.format("%s %s", latestDate, latestTime));
+                        highestDateView.setText(String.format("%s %s", highestDate, highestTime));
+                        lowestDateView.setText(String.format("%s %s", lowestDate, lowestTime));
 
                     }
 
