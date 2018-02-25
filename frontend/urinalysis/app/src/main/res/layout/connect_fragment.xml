@@ -1,77 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<AbsoluteLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="5dp"
-    android:paddingRight="5dp"
-    android:paddingTop="5dp"
-    tools:context=".MainActivity"
-    android:transitionGroup="true">
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_x="4dp"
+        android:layout_y="0dp"
+        android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="200dp"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/abc"
-        android:theme="@style/Base.TextAppearance.AppCompat" />
+        <TextView
+            android:id="@+id/bbb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:text="Scan and Connect Bluetooth"
+            android:textColor="@color/urinalysis_text"
+            android:textSize="23dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Status:"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/bluetoothStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.9"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Status..." />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
 
     <Button
+        android:id="@+id/scan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Turn On"
-        android:id="@+id/button"
-        android:layout_below="@+id/imageView"
-        android:layout_toStartOf="@+id/imageView"
-        android:layout_toLeftOf="@+id/imageView"
-        android:clickable="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Get visible"
-        android:id="@+id/button2"
-        android:layout_alignBottom="@+id/button"
-        android:layout_centerHorizontal="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="List devices"
-        android:id="@+id/button3"
-        android:layout_below="@+id/imageView"
-        android:layout_toRightOf="@+id/imageView"
-        android:layout_toEndOf="@+id/imageView" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="turn off"
-        android:id="@+id/button4"
-        android:layout_below="@+id/button"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_x="181dp"
+        android:layout_y="410dp"
+        android:text="On" />
 
     <ListView
+        android:id="@+id/devicesListView"
+        android:layout_width="match_parent"
+        android:layout_height="341dp"
+        android:layout_weight="0.1"
+        android:layout_x="0dp"
+        android:layout_y="64dp"
+        android:choiceMode="singleChoice" />
+
+    <Button
+        android:id="@+id/PairedBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/listView"
-        android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/button"
-        android:layout_alignStart="@+id/button"
-        android:layout_below="@+id/textView2" />
+        android:layout_x="93dp"
+        android:layout_y="411dp"
+        android:text="Paired" />
 
-    <TextView
+
+    <Button
+        android:id="@+id/off"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Paired devices:"
-        android:id="@+id/textView2"
-        android:textColor="#ff34ff06"
-        android:textSize="25dp"
-        android:layout_below="@+id/button4"
-        android:layout_alignLeft="@+id/listView"
-        android:layout_alignStart="@+id/listView" />
+        android:layout_x="271dp"
+        android:layout_y="411dp"
+        android:text="Off" />
 
-</RelativeLayout>
+    <Button
+        android:id="@+id/discover"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_x="5dp"
+        android:layout_y="412dp"
+        android:text="scan" />
+
+
+
+</AbsoluteLayout>
