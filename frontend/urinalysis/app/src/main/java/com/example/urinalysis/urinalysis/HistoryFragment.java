@@ -83,9 +83,28 @@ public class HistoryFragment extends Fragment {
                 String query_category = category.substring(0, 1).toLowerCase() +
                         category.substring(1);
 
-                
+                // Call to get the history given that category
+                Call<List<Category>> call_categories = api.getCategories();
+                call_categories.enqueue(new Callback<List<Category>>() {
+                    @Override
+                    public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
+                        List<Category> categoryBody = response.body();
+                        for(Category c: categoryBody){
+                            categories.add(c.getName().substring(0, 1).toUpperCase()
+                                    + c.getName().substring(1));
+                        }
+                        final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
+                                getActivity(), R.layout.spinner_item, categories);
+                        spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
+                        spinner.setAdapter(spinnerArrayAdapter);
+                    }
 
-
+                    @Override
+                    public void onFailure(Call<List<Category>> call, Throwable t) {
+                        Toast.makeText(getActivity().getApplicationContext(),
+                                t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override

@@ -6,19 +6,22 @@ package com.example.urinalysis.urinalysis.models;
 
 public class Substance {
     private Integer id;
-    private String unitName;
+    private String unit_name;
     private Integer value;
-    private String categoryName;
-    private String recordDate;
-    private String recordTime;
+    private String category_name;
+    private String record_date;
+    private String record_time;
+    private String notes;
 
-    public Substance(Integer id, String unitName, Integer value, String categoryName, String recordDate, String recordTime) {
+    public Substance(Integer id, String unitName, Integer value, String categoryName,
+                     String recordDate, String recordTime, String notes) {
         this.id = id;
-        this.unitName = unitName;
+        this.unit_name = unitName;
         this.value = value;
-        this.categoryName = categoryName;
-        this.recordDate = recordDate;
-        this.recordTime = recordTime;
+        this.category_name = categoryName;
+        this.record_date = recordDate;
+        this.record_time = recordTime;
+        this.notes = notes;
     }
 
     public Integer getId() {
@@ -26,7 +29,7 @@ public class Substance {
     }
 
     public String getUnitName() {
-        return unitName;
+        return unit_name;
     }
 
     public Integer getValue() {
@@ -34,14 +37,16 @@ public class Substance {
     }
 
     public String getCategoryName() {
-        return categoryName;
+        return category_name;
     }
 
     public String getRecordDate() {
-        return recordDate;
+        return record_date;
     }
 
     public String getRecordTime() {
-        return recordTime;
+        return record_time;
     }
+
+    public String getNotes() {return notes;}
 }

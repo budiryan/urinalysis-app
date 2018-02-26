@@ -3,6 +3,7 @@ package com.example.urinalysis.urinalysis;
 import com.example.urinalysis.urinalysis.models.AveragesPerDay;
 import com.example.urinalysis.urinalysis.models.Category;
 import com.example.urinalysis.urinalysis.models.Stats;
+import com.example.urinalysis.urinalysis.models.Substance;
 
 import java.util.List;
 
@@ -19,6 +20,9 @@ public interface Api {
 
     @GET("category")
     Call<List<Category>> getCategories();
+
+    @GET("substance")
+    Call<List<Substance>> getSubstance(@Query("category") String category, @Query("num") Integer num);
 
     @GET("getavgperday")
     Call<AveragesPerDay> getAveragePerDay(@Query("category") String category);

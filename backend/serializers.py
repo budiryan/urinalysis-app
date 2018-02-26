@@ -12,7 +12,7 @@ class SubstanceSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name')
     unit_name = serializers.CharField(source='unit.name')
     class Meta:
-        fields = ('id', 'unit_name', 'value', 'category_name', 'record_date', 'record_time')
+        fields = ('id', 'unit_name', 'value', 'category_name', 'record_date', 'record_time', 'notes')
         model = Substance
 
 
