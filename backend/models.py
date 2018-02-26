@@ -86,6 +86,9 @@ class Category(models.Model):
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        ordering = ['name']
+
 
 # Model for storing unit types, each type
 class Unit(models.Model):
