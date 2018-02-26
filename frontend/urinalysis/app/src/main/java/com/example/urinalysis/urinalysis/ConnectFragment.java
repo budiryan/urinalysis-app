@@ -2,7 +2,6 @@ package com.example.urinalysis.urinalysis;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -49,7 +48,6 @@ public class ConnectFragment extends StatedFragment{
 
     // GUI Components
     private TextView mBluetoothStatus;
-    public static TextView gasVal;
     private Button mScanBtn;
     private Button mOffBtn;
     private Button mListPairedDevicesBtn;
@@ -58,7 +56,6 @@ public class ConnectFragment extends StatedFragment{
     private Set<BluetoothDevice> mPairedDevices;
     private ArrayAdapter<String> mBTArrayAdapter;
     private ListView mDevicesListView;
-    private ImageButton next;
     public static Handler mHandler; // Our main handler that will receive callback notifications
     public static ConnectedThread mConnectedThread; // bluetooth background worker thread to send and receive data
     public static BluetoothSocket mBTSocket = null; // bi-directional client-to-client data path
@@ -226,9 +223,11 @@ public class ConnectFragment extends StatedFragment{
         public void write(String input) {
             byte[] bytes = input.getBytes();           //converts entered String into bytes
             try {
-                Toast.makeText(getActivity().getApplicationContext(),"Sending Data to Arduino..", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity().getApplicationContext(),
+                        "Sending Data to Arduino..", Toast.LENGTH_SHORT).show();
                 mmOutStream.write(bytes);
-                Toast.makeText(getActivity().getApplicationContext(),"Data sent.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity().getApplicationContext(),
+                        "Data sent.", Toast.LENGTH_SHORT).show();
             } catch (IOException e) { }
         }
 

@@ -28,10 +28,14 @@ class SubstanceView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         num_instance = self.request.query_params.get('num')
+        category = self.request.query_params.get('category')
         if num_instance is not None:
             queryset = Substance.objects.all()[:int(num_instance)]
         else:
             queryset = Substance.objects.all()
+
+        if category is not None:
+            queryset = queryset.filter(category__name=category)
         return queryset
 
 

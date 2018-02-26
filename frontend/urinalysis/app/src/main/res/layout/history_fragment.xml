@@ -1,19 +1,42 @@
-<?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#ffffff">
 
-    <TextView
-        android:id="@+id/textTab1"
-        android:layout_width="wrap_content"
+    <Spinner
+        android:id="@+id/spinner_history"
+        android:layout_width="181dp"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
-        android:text="BacBac2"
-        android:textSize="25sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp" />
 
-</android.support.constraint.ConstraintLayout>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="2px"
+            android:layout_marginTop="16dp"
+            android:layout_below="@id/spinner_history"
+            android:id="@+id/separator"
+            android:background="#DADADA" />
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/fragment_history_recycler_view"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:layout_below="@id/separator"
+            android:focusable="true"
+            android:orientation="vertical"
+            android:paddingBottom="32dp"
+            android:scrollbars="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:context="org.glucosio.android.fragment.HistoryFragment" />
+
+
+</RelativeLayout>
