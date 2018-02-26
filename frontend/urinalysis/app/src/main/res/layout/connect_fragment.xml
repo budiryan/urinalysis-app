@@ -4,11 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_x="4dp"
-        android:layout_y="0dp"
+        android:layout_x="0dp"
+        android:layout_y="2dp"
         android:orientation="vertical">
 
         <TextView
@@ -92,6 +93,20 @@
         android:layout_y="412dp"
         android:text="scan" />
 
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_x="6dp"
+        android:layout_y="475dp"
+        android:text="Sensor Data:" />
+
+    <TextView
+        android:id="@+id/sensorData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_x="2dp"
+        android:layout_y="494dp" />
 
 
 </AbsoluteLayout>
