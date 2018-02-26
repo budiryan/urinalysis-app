@@ -43,14 +43,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         // For value
         TextView readingTextView = holder.mView.findViewById(R.id.item_history_reading);
 
-        // For unit
-        TextView idTextView = holder.mView.findViewById(R.id.item_history_id);
 
         // For date and time
         TextView datetimeTextView = holder.mView.findViewById(R.id.item_history_time);
 
-
-//        TextView typeTextView = holder.mView.findViewById(R.id.item_history_type);
 
         // For notes
         TextView notesTextView = holder.mView.findViewById(R.id.item_history_type);
@@ -58,7 +54,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         readingTextView.setText(String.format("%s %s",
                 this.substances.get(position).getValue(),
                 this.substances.get(position).getUnitName()));
-        idTextView.setText(this.substances.get(position).getUnitName());
         datetimeTextView.setText(String.format("%s %s",
                 this.substances.get(position).getRecordDate(),
                 this.substances.get(position).getRecordTime()));
