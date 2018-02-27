@@ -71,6 +71,8 @@ public class HistoryFragment extends Fragment {
         api = retrofit.create(Api.class);
         categories = new ArrayList<>();
         categoriesId = new ArrayList<>();
+        units =  new ArrayList<>();
+        unitsId = new ArrayList<>();
         final Spinner spinner = view.findViewById(R.id.spinner_history);
         final Context context = getActivity().getApplicationContext();
 
@@ -81,42 +83,22 @@ public class HistoryFragment extends Fragment {
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         // Call to get the list of categories
-        Call<List<Category>> call_categories = api.getCategories();
-        call_categories.enqueue(new Callback<List<Category>>() {
+        Call<List<Unit>> call_categories = api.getUnits();
+        call_categories.enqueue(new Callback<List<Unit>>() {
             @Override
-            public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
-                List<Category> categoryBody = response.body();
-                for(Category c: categoryBody){
-                    categories.add(c.getName().substring(0, 1).toUpperCase()
-                            + c.getName().substring(1));
-                    categoriesId.add(c.getId());
+            public void onResponse(Call<List<Unit>> call, Response<List<Unit>> response) {
+                List<Unit> uniBody = response.body();
+                for(Unit c: uniBody){
+                    categories.add(c.getCategoryName().substring(0, 1).toUpperCase()
+                            + c.getCategoryName().substring(1));
+                    categoriesId.add(c.getCategory());
+                    units.add(c.getName());
+                    unitsId.add(c.getId());
                 }
                 final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
                         getActivity(), R.layout.spinner_item, categories);
                 spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
                 spinner.setAdapter(spinnerArrayAdapter);
-            }
-
-            @Override
-            public void onFailure(Call<List<Category>> call, Throwable t) {
-                Toast.makeText(getActivity().getApplicationContext(),
-                        t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        units = new ArrayList<>();
-        unitsId = new ArrayList<>();
-
-        // Call to get the list of units from backend
-        Call<List<Unit>> call_units = api.getUnits();
-        call_units.enqueue(new Callback<List<Unit>>() {
-            @Override
-            public void onResponse(Call<List<Unit>> call, Response<List<Unit>> response) {
-                List<Unit> unitBody = response.body();
-                for(Unit u: unitBody){
-                    unitsId.add(u.getId());
-                    units.add(u.getName());
-                }
             }
 
             @Override

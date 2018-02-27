@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils import timezone
 
 
 # Create your models here.
@@ -64,8 +65,8 @@ class Substance(TimeStampedModel):
     value = models.FloatField(validators=[MaxValueValidator(54054),
                                           MinValueValidator(0)])
     category = models.ForeignKey('Category', on_delete=models.CASCADE)
-    record_date = models.DateField('Date', auto_now_add=True)
-    record_time = models.TimeField('Time', auto_now_add=True)
+    record_date = models.DateField('Date', default=timezone.now().date())
+    record_time = models.TimeField('Time', auto_now_add=timezone.now().time())
     notes = models.TextField('Notes', null=False, blank=True, default='')
 
     def __unicode__(self):
