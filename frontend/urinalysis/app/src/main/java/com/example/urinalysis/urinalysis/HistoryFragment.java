@@ -21,7 +21,9 @@ import com.example.urinalysis.urinalysis.models.AveragesPerDay;
 import com.example.urinalysis.urinalysis.models.Category;
 import com.example.urinalysis.urinalysis.models.Stats;
 import com.example.urinalysis.urinalysis.models.Substance;
+import com.example.urinalysis.urinalysis.models.Unit;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +45,11 @@ public class HistoryFragment extends Fragment {
 
     // Data for the spinner
     private ArrayList<String> categories;
+    private ArrayList<Integer> categoriesId;
+
+    // Data for sending post request
+    private ArrayList<Integer> unitsId;
+    private ArrayList<String> units;
 
     // Data to display on the body
     private List<Substance> substances;
@@ -63,6 +70,7 @@ public class HistoryFragment extends Fragment {
                 .build();
         api = retrofit.create(Api.class);
         categories = new ArrayList<>();
+        categoriesId = new ArrayList<>();
         final Spinner spinner = view.findViewById(R.id.spinner_history);
         final Context context = getActivity().getApplicationContext();
 
@@ -81,6 +89,7 @@ public class HistoryFragment extends Fragment {
                 for(Category c: categoryBody){
                     categories.add(c.getName().substring(0, 1).toUpperCase()
                             + c.getName().substring(1));
+                    categoriesId.add(c.getId());
                 }
                 final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
                         getActivity(), R.layout.spinner_item, categories);
@@ -90,6 +99,28 @@ public class HistoryFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<Category>> call, Throwable t) {
+                Toast.makeText(getActivity().getApplicationContext(),
+                        t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        units = new ArrayList<>();
+        unitsId = new ArrayList<>();
+
+        // Call to get the list of units from backend
+        Call<List<Unit>> call_units = api.getUnits();
+        call_units.enqueue(new Callback<List<Unit>>() {
+            @Override
+            public void onResponse(Call<List<Unit>> call, Response<List<Unit>> response) {
+                List<Unit> unitBody = response.body();
+                for(Unit u: unitBody){
+                    unitsId.add(u.getId());
+                    units.add(u.getName());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Unit>> call, Throwable t) {
                 Toast.makeText(getActivity().getApplicationContext(),
                         t.getMessage(), Toast.LENGTH_SHORT).show();
             }
@@ -122,6 +153,7 @@ public class HistoryFragment extends Fragment {
                                 t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+                Call<Substance> save_substance = api.saveSubstance((float)8.0, unitsId.get(0), categoriesId.get(0), "Test posting from android");
             }
 
             @Override

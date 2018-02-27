@@ -103,6 +103,7 @@ public class ConnectFragment extends StatedFragment{
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
+
 //                    if (readMessage.charAt(0) == 'g'){
 
                         sensorData.setText(readMessage);

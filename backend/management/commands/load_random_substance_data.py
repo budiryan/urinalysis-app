@@ -40,7 +40,7 @@ class Command(BaseCommand):
         try:
             unit = Unit.objects.get(name=substance_unit.lower())
         except ObjectDoesNotExist:
-            unit = Unit.objects.create(name=substance_unit.lower())
+            unit = Unit.objects.create(name=substance_unit.lower(), category=category)
 
         # Delete existing data.
         # Substance.objects.filter().delete()

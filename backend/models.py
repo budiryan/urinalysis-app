@@ -88,10 +88,14 @@ class Category(models.Model):
 
 # Model for storing unit types, each type
 class Unit(models.Model):
-    name = models.CharField(unique=True, max_length=10, default='mg/dl')
+    name = models.CharField(unique=True, max_length=10)
+    category = models.ForeignKey('Category', on_delete=models.CASCADE)
 
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        ordering = ['name']
 
 # class UserSettings(TimeStampedModel):
 #     """

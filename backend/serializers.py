@@ -21,6 +21,7 @@ class SubstanceSerializer(serializers.ModelSerializer):
 
 
 class UnitSerializer(serializers.ModelSerializer):
+    category_name = serializers.CharField(source='category.name', required=False)
     class Meta:
-        fields = '__all__'
+        fields = ('id', 'name', 'category', 'category_name')
         model = Unit

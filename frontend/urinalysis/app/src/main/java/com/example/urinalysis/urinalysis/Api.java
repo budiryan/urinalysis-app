@@ -4,11 +4,15 @@ import com.example.urinalysis.urinalysis.models.AveragesPerDay;
 import com.example.urinalysis.urinalysis.models.Category;
 import com.example.urinalysis.urinalysis.models.Stats;
 import com.example.urinalysis.urinalysis.models.Substance;
+import com.example.urinalysis.urinalysis.models.Unit;
 
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 /**
@@ -21,6 +25,9 @@ public interface Api {
     @GET("category")
     Call<List<Category>> getCategories();
 
+    @GET("unit")
+    Call<List<Unit>> getUnits();
+
     @GET("substance")
     Call<List<Substance>> getSubstance(@Query("category") String category,
                                        @Query("num") Integer num);
@@ -31,5 +38,11 @@ public interface Api {
     @GET("getstats")
     Call<Stats> getStats(@Query("category") String category);
 
+    @POST("/posts")
+    @FormUrlEncoded
+    Call<Substance> saveSubstance(@Field("value") Float value,
+                        @Field("unit") Integer unit,
+                        @Field("category") Integer category,
+                        @Field("notes") String notes);
 
 }
