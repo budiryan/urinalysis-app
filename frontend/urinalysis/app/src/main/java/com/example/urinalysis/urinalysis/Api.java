@@ -22,11 +22,14 @@ public interface Api {
     Call<List<Category>> getCategories();
 
     @GET("substance")
-    Call<List<Substance>> getSubstance(@Query("category") String category, @Query("num") Integer num);
+    Call<List<Substance>> getSubstance(@Query("category") String category,
+                                       @Query("num") Integer num);
 
     @GET("getavgperday")
     Call<AveragesPerDay> getAveragePerDay(@Query("category") String category);
 
     @GET("getstats")
     Call<Stats> getStats(@Query("category") String category);
+
+
 }

@@ -9,8 +9,8 @@ urlpatterns = [
     path('getstats', views.GetStats.as_view()),
     path('category', views.CategoryView.as_view()),
     path('category/<int:pk>/', views.CategoryInstanceView.as_view()),
-    path('substance', views.SubstanceView.as_view()),
-    path('substance/<int:pk>/', views.SubstanceInstanceView.as_view()),
+    path('substance', views.SubstanceList.as_view()),
+    path('substance/<int:pk>/', views.SubstanceDetail.as_view()),
     path('unit/', views.UnitView.as_view()),
     path('unit/<int:pk>/', views.UnitInstanceView.as_view()),
 ]

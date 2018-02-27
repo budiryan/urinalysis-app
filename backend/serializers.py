@@ -9,11 +9,14 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class SubstanceSerializer(serializers.ModelSerializer):
-    category_name = serializers.CharField(source='category.name')
-    unit_name = serializers.CharField(source='unit.name')
-    record_time = serializers.TimeField(format="%H:%M:%S")
+    category_name = serializers.CharField(source='category.name', required=False)
+    unit_name = serializers.CharField(source='unit.name', required=False)
+    record_date = serializers.DateField(required=False)
+    record_time = serializers.TimeField(format="%H:%M:%S", required=False)
+
+
     class Meta:
-        fields = ('id', 'unit_name', 'value', 'category_name', 'record_date', 'record_time', 'notes')
+        fields = ('id', 'unit', 'unit_name', 'value', 'category', 'category_name', 'record_date', 'record_time', 'notes')
         model = Substance
 
 
