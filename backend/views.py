@@ -28,6 +28,7 @@ class SubstanceList(APIView):
     """
     List all users, or create a new user.
     """
+    renderer_classes = [renderers.JSONRenderer]
     def get(self, request, format=None):
         num_instance = request.query_params.get('num')
         category = request.query_params.get('category')
@@ -56,6 +57,7 @@ class SubstanceDetail(APIView):
     """
     Retrieve, update or delete a user instance.
     """
+    renderer_classes = [renderers.JSONRenderer]
     def get_object(self, pk):
         try:
             return Substance.objects.get(pk=pk)
@@ -92,6 +94,7 @@ class CategoryDetail(APIView):
     """
     Retrieve, update or delete a user instance.
     """
+    renderer_classes = [renderers.JSONRenderer]
     def get_object(self, pk):
         try:
             return Unit.objects.get(pk=pk)
@@ -120,6 +123,7 @@ class CategoryList(APIView):
     """
     List all users, or create a new user.
     """
+    renderer_classes = [renderers.JSONRenderer]
     def get(self, request, format=None):
         categories = Category.objects.all()
 
@@ -138,6 +142,7 @@ class UnitList(APIView):
     """
     List all users, or create a new user.
     """
+    renderer_classes = [renderers.JSONRenderer]
     def get(self, request, format=None):
         units = Unit.objects.all()
 
@@ -156,6 +161,7 @@ class UnitDetail(APIView):
     """
     Retrieve, update or delete a user instance.
     """
+    renderer_classes = [renderers.JSONRenderer]
     def get_object(self, pk):
         try:
             return Unit.objects.get(pk=pk)
