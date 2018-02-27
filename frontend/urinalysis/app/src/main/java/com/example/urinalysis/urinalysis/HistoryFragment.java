@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,7 +39,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by budiryan on 2/21/18.
  */
 
-public class HistoryFragment extends Fragment {
+public class HistoryFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = "HistoryFragment";
     // For calling the API through retrofit
     private Api api;
@@ -58,6 +60,8 @@ public class HistoryFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
     private RecyclerView.Adapter mAdapter;
+
+    SwipeRefreshLayout swipeLayout;
 
 
     @Nullable
@@ -81,6 +85,9 @@ public class HistoryFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(false);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
+        swipeLayout.setOnRefreshListener(this);
 
         // Call to get the list of categories
         Call<List<Unit>> call_categories = api.getUnits();
@@ -158,5 +165,11 @@ public class HistoryFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onRefresh() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.detach(this).attach(this).commit();
     }
 }

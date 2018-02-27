@@ -28,6 +28,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.urinalysis.urinalysis.models.Substance;
 import com.inthecheesefactory.thecheeselibrary.fragment.support.v4.app.StatedFragment;
 
 import java.io.IOException;
@@ -37,6 +38,12 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.UUID;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by budiryan on 2/21/18.
@@ -48,10 +55,11 @@ public class ConnectFragment extends StatedFragment{
 
     // GUI Components
     private TextView mBluetoothStatus;
-    private Button mScanBtn;
+    private Button mOnBtn;
     private Button mOffBtn;
     private Button mListPairedDevicesBtn;
-    private Button mDiscoverBtn;
+    private Button mSendDataBtn;
+    private Button mClearBtn;
     public static BluetoothAdapter mBTAdapter;
     private Set<BluetoothDevice> mPairedDevices;
     private ArrayAdapter<String> mBTArrayAdapter;
@@ -60,6 +68,7 @@ public class ConnectFragment extends StatedFragment{
     public static ConnectedThread mConnectedThread; // bluetooth background worker thread to send and receive data
     public static BluetoothSocket mBTSocket = null; // bi-directional client-to-client data path
     private TextView sensorData;
+    private Float sensorDataValue;
 
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // "random" unique identifier
 
@@ -68,21 +77,35 @@ public class ConnectFragment extends StatedFragment{
     private final static int MESSAGE_READ = 2; // used in bluetooth handler to identify message update
     private final static int CONNECTING_STATUS = 3; // used in bluetooth handler to identify message status
 
+
+    // For calling the API through retrofit
+    private Api api;
+    private Retrofit retrofit;
+    private Integer sendCount;
+
     @SuppressLint("HandlerLeak")
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.connect_fragment, container, false);
 
-        mBluetoothStatus = (TextView)view.findViewById(R.id.bluetoothStatus);
-        mScanBtn = (Button)view.findViewById(R.id.scan);
-        mOffBtn = (Button)view.findViewById(R.id.off);
-        mDiscoverBtn = (Button)view.findViewById(R.id.discover);
-        mListPairedDevicesBtn = (Button)view.findViewById(R.id.PairedBtn);
-        mBTArrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
+        retrofit = new Retrofit.Builder()
+                .baseUrl(Api.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        api = retrofit.create(Api.class);
+        sendCount = 0;
+
+        mBluetoothStatus = view.findViewById(R.id.bluetoothStatus);
+        mOnBtn = view.findViewById(R.id.on);
+        mOffBtn = view.findViewById(R.id.off);
+        mSendDataBtn = view.findViewById(R.id.send_data);
+        mListPairedDevicesBtn = view.findViewById(R.id.PairedBtn);
+        mClearBtn = view.findViewById(R.id.clear);
+        mBTArrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1);
         mBTAdapter = BluetoothAdapter.getDefaultAdapter(); // get a handle on the bluetooth radio
 
-        mDevicesListView = (ListView)view.findViewById(R.id.devicesListView);
+        mDevicesListView = view.findViewById(R.id.devicesListView);
         mDevicesListView.setAdapter(mBTArrayAdapter); // assign model to view
         mDevicesListView.setOnItemClickListener(mDeviceClickListener);
 
@@ -103,11 +126,13 @@ public class ConnectFragment extends StatedFragment{
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
-
-//                    if (readMessage.charAt(0) == 'g'){
-
-                        sensorData.setText(readMessage);
-//                    }
+                    try {
+                        sensorDataValue = Float.parseFloat(readMessage);
+                        sensorData.setText(String.valueOf(sensorDataValue));
+                    }
+                    catch (Exception e){
+                        Log.e(TAG, "sensor data not valid", e);
+                    }
                 }
 
                 if(msg.what == CONNECTING_STATUS){
@@ -127,7 +152,7 @@ public class ConnectFragment extends StatedFragment{
         }
 
         else {
-            mScanBtn.setOnClickListener(new View.OnClickListener() {
+            mOnBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     bluetoothOn(v);
@@ -141,6 +166,13 @@ public class ConnectFragment extends StatedFragment{
                 }
             });
 
+            mClearBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mDevicesListView.setAdapter(null);
+                }
+            });
+
             mListPairedDevicesBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v){
@@ -148,14 +180,22 @@ public class ConnectFragment extends StatedFragment{
                 }
             });
 
-            mDiscoverBtn.setOnClickListener(new View.OnClickListener(){
+            mSendDataBtn.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v){
-                    discover(v);
+                    sendData(v);
                 }
             });
         }
 
+        if (!mBTAdapter.isEnabled()){
+            mBluetoothStatus.setText("Bluetooth is Disabled");
+        }
+        else {
+            mBluetoothStatus.setText("Bluetooth is Enabled");
+        }
+
+        listPairedDevices(view);
         return view;
     }
 
@@ -330,39 +370,42 @@ public class ConnectFragment extends StatedFragment{
     }
 
     private void listPairedDevices(View view){
+        mDevicesListView.setAdapter(mBTArrayAdapter); // assign model to view
         mPairedDevices = mBTAdapter.getBondedDevices();
+        mBTArrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
         if(mBTAdapter.isEnabled()) {
             // put it's one to the adapter
             for (BluetoothDevice device : mPairedDevices)
                 mBTArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-
-            Toast.makeText(getActivity().getApplicationContext(),
-                    "Show Paired Devices", Toast.LENGTH_SHORT).show();
         }
         else
             Toast.makeText(getActivity().getApplicationContext(),
                     "Bluetooth not on", Toast.LENGTH_SHORT).show();
     }
 
-    private void discover(View view){
+    private void sendData(View view){
         // Check if the device is already discovering
-        if(mBTAdapter.isDiscovering()){
-            mBTAdapter.cancelDiscovery();
-            Toast.makeText(getActivity().getApplicationContext(),
-                    "Discovery stopped",Toast.LENGTH_SHORT).show();
+        try{
+            Call<Substance> save_substance = api.saveSubstance(sensorDataValue,
+                    5, 13, "Test posting from android! Count number: " + String.valueOf(sendCount));
+                save_substance.enqueue(new Callback<Substance>() {
+                    @Override
+                    public void onResponse(Call<Substance> call, Response<Substance> response) {
+                        Log.d(TAG, "response is: " + response.body().toString());
+                        sendCount += 1;
+                        Toast.makeText(getActivity().getApplicationContext(),
+                                "Data Succesfully Sent to Server, value is: "
+                                        + sensorDataValue, Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onFailure(Call<Substance> call, Throwable t) {
+                        Log.d(TAG, "ERROR SENDING");
+                    }
+                });
         }
-        else{
-            if(mBTAdapter.isEnabled()) {
-                mBTArrayAdapter.clear(); // clear items
-                mBTAdapter.startDiscovery();
-                Toast.makeText(getActivity().getApplicationContext(),
-                        "Discovery started", Toast.LENGTH_SHORT).show();
-                getActivity().registerReceiver(blReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
-            }
-            else{
-                Toast.makeText(getActivity().getApplicationContext(),
-                        "Bluetooth not on", Toast.LENGTH_SHORT).show();
-            }
+        catch (Exception e){
+
         }
     }
 

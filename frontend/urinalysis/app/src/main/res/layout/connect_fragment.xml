@@ -16,7 +16,7 @@
                 android:ellipsize="end"
                 android:gravity="center"
                 android:maxLines="1"
-                android:text="Scan and Connect Bluetooth"
+                android:text="Connect Bluetooth"
                 android:textColor="@color/urinalysis_text"
                 android:textSize="20sp"
                 android:layout_marginTop="15dp"/>
@@ -36,6 +36,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.1"
+                    android:layout_marginLeft="2dp"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:text="Status:"
@@ -65,17 +66,10 @@
                 android:gravity="center">
 
                 <Button
-                    android:id="@+id/scan"
+                    android:id="@+id/on"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="On" />
-
-                <Button
-                    android:id="@+id/PairedBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Paired" />
-
 
                 <Button
                     android:id="@+id/off"
@@ -84,10 +78,22 @@
                     android:text="Off" />
 
                 <Button
-                    android:id="@+id/discover"
+                    android:id="@+id/clear"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Scan" />
+                    android:text="Clear" />
+
+                <Button
+                    android:id="@+id/PairedBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Paired" />
+
+                <Button
+                    android:id="@+id/send_data"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Send" />
 
             </LinearLayout>
 
@@ -101,19 +107,23 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="25dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sensor Data:" />
+                android:layout_weight="0.9"
+                android:textStyle="bold"
+                android:layout_marginLeft="2dp"
+                android:text="Sensor Data: " />
 
             <TextView
                 android:id="@+id/sensorData"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
                 />
         </LinearLayout>
 
