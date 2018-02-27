@@ -1,18 +1,39 @@
 package com.example.urinalysis.urinalysis.models;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by budiryan on 2/23/18.
  */
 
 public class Substance {
+    @SerializedName("id")
+    @Expose
     private Integer id;
+    @SerializedName("unit")
+    @Expose
     private Integer unit;
+    @SerializedName("unit_name")
+    @Expose
     private String unit_name;
+    @SerializedName("category")
+    @Expose
     private Integer category;
+    @SerializedName("category_name")
+    @Expose
     private String category_name;
+    @SerializedName("value")
+    @Expose
     private Integer value;
+    @SerializedName("record_date")
+    @Expose
     private String record_date;
+    @SerializedName("record_time")
+    @Expose
     private String record_time;
+    @SerializedName("notes")
+    @Expose
     private String notes;
 
     public Substance(Integer id, Integer unit, String unitName, Integer category,
@@ -99,5 +120,20 @@ public class Substance {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    @Override
+    public String toString() {
+        return "Substance{" +
+                "id=" + id +
+                ", unit=" + unit +
+                ", unit_name='" + unit_name + '\'' +
+                ", category=" + category +
+                ", category_name='" + category_name + '\'' +
+                ", value=" + value +
+                ", record_date='" + record_date + '\'' +
+                ", record_time='" + record_time + '\'' +
+                ", notes='" + notes + '\'' +
+                '}';
     }
 }

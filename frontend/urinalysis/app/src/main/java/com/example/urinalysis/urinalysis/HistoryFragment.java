@@ -135,16 +135,18 @@ public class HistoryFragment extends Fragment {
                                 t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+
                 Call<Substance> save_substance = api.saveSubstance((float)8.0, unitsId.get(0), categoriesId.get(0), "Test posting from android!");
                 save_substance.enqueue(new Callback<Substance>() {
                     @Override
                     public void onResponse(Call<Substance> call, Response<Substance> response) {
                         Log.i(TAG, "post submitted to API.");
+                        Log.d(TAG, "response is: " + response.body());
                     }
 
                     @Override
                     public void onFailure(Call<Substance> call, Throwable t) {
-
+                        Log.d(TAG, "ERROR SENDING");
                     }
                 });
             }

@@ -38,7 +38,7 @@ public interface Api {
     @GET("getstats")
     Call<Stats> getStats(@Query("category") String category);
 
-    @POST("/posts")
+    @POST("substance")
     @FormUrlEncoded
     Call<Substance> saveSubstance(@Field("value") Float value,
                         @Field("unit") Integer unit,

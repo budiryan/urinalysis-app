@@ -28,7 +28,7 @@ class SubstanceList(APIView):
     """
     List all users, or create a new user.
     """
-    # renderer_classes = [renderers.JSONRenderer]
+    renderer_classes = [renderers.JSONRenderer]
     def get(self, request, format=None):
         num_instance = request.query_params.get('num')
         category = request.query_params.get('category')
