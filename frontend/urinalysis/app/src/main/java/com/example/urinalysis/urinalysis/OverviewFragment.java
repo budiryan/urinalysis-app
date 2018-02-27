@@ -146,9 +146,7 @@ public class OverviewFragment extends Fragment {
                     public void onResponse(Call<AveragesPerDay> call, Response<AveragesPerDay> response) {
                         AveragesPerDay avgPerDay = response.body();
                         xVal = avgPerDay.getDates();
-                        Log.d(TAG, "DEBUG: " + String.valueOf(xVal.length));
                         yVal = avgPerDay.getValues();
-                        Log.d(TAG, "DEBUG 2: " + String.valueOf(yVal.length));
                         unit = avgPerDay.getUnit();
                         drawChart(chart);
                     }
