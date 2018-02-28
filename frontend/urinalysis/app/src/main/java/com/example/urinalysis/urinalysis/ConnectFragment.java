@@ -2,16 +2,21 @@ package com.example.urinalysis.urinalysis;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -181,9 +186,10 @@ public class ConnectFragment extends StatedFragment{
             });
 
             mSendDataBtn.setOnClickListener(new View.OnClickListener(){
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 @Override
                 public void onClick(View v){
-                    sendData(v);
+                    sendData(v, sensorDataValue);
                 }
             });
         }
@@ -383,30 +389,51 @@ public class ConnectFragment extends StatedFragment{
                     "Bluetooth not on", Toast.LENGTH_SHORT).show();
     }
 
-    private void sendData(View view){
-        // Check if the device is already discovering
-        try{
-            Call<Substance> save_substance = api.saveSubstance(sensorDataValue,
-                    5, 13, "Test posting from android! Count number: " + String.valueOf(sendCount));
-                save_substance.enqueue(new Callback<Substance>() {
-                    @Override
-                    public void onResponse(Call<Substance> call, Response<Substance> response) {
-                        Log.d(TAG, "response is: " + response.body().toString());
-                        sendCount += 1;
-                        Toast.makeText(getActivity().getApplicationContext(),
-                                "Data Succesfully Sent to Server, value is: "
-                                        + sensorDataValue, Toast.LENGTH_LONG).show();
-                    }
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void sendData(View view, Float sensorDataValue){
+        AlertDialog.Builder builder;
+        builder = new AlertDialog.Builder(getActivity());
+        final Float sensorValue = getSensorValue();
+        builder.setTitle("Add New Test Data")
+                .setMessage("Send new glucose value of " + String.valueOf(sensorDataValue)
+                        + " mg/dl to Database?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        try{
+                            Call<Substance> save_substance = api.saveSubstance(sensorValue,
+                                    5, 13, "Test posting from android! Count number: " + String.valueOf(sendCount));
+                                save_substance.enqueue(new Callback<Substance>() {
+                                    @Override
+                                    public void onResponse(Call<Substance> call, Response<Substance> response) {
+                                        Log.d(TAG, "response is: " + response.body().toString());
+                                        sendCount += 1;
+                                        Toast.makeText(getActivity().getApplicationContext(),
+                                                "Data Succesfully Sent to Server, value is: "
+                                                        + sensorValue, Toast.LENGTH_LONG).show();
+                                    }
 
-                    @Override
-                    public void onFailure(Call<Substance> call, Throwable t) {
-                        Log.d(TAG, "ERROR SENDING");
+                                    @Override
+                                    public void onFailure(Call<Substance> call, Throwable t) {
+                                        Log.d(TAG, "ERROR SENDING");
+                                    }
+                                });
+                        }
+                        catch (Exception e){
+                            Log.e(TAG, "Error", e);
+                        }
                     }
-                });
-        }
-        catch (Exception e){
-
-        }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // do nothing
+                    }
+                })
+                .show();
     }
+
+    private Float getSensorValue(){
+        return sensorDataValue;
+    }
+
 
 }
