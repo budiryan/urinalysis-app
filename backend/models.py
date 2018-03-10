@@ -59,8 +59,7 @@ class SubstanceManager(models.Manager):
 # Model for storing test result
 class Substance(TimeStampedModel):
     objects = SubstanceManager()
-
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey('User', on_delete=models.CASCADE)
     unit = models.ForeignKey('Unit', on_delete=models.CASCADE)
     value = models.FloatField(validators=[MaxValueValidator(54054),
                                           MinValueValidator(0)])
@@ -98,14 +97,12 @@ class Unit(models.Model):
     class Meta:
         ordering = ['name']
 
-# class UserSettings(TimeStampedModel):
-#     """
-#     Model to store additional user settings and preferences. Extends User
-#     model.
-#     """
-#     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='settings')
-#
-#     time_zone = TimeZoneField(default=settings.TIME_ZONE)
-#
-#     def username(self):
-#         return self.user.username
+# Model for storing user object, very stupid implementation of user model, no need authentication
+class User(models.Model):
+    name = models.CharField(unique=True, max_length=20)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']

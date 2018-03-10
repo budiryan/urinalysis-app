@@ -2,9 +2,9 @@ from datetime import date, timedelta
 
 from django.core.management.base import BaseCommand
 from django.db.models.base import ObjectDoesNotExist
-from django.contrib.auth.models import User
+from factory.fuzzy import FuzzyInteger
 
-from ...models import Substance, Category, Unit
+from ...models import Category, Unit, User
 from ...tests.factories import SubstanceFactory
 
 
@@ -13,24 +13,21 @@ class Command(BaseCommand):
     help = 'Populate substance table with random dummy data.'
 
     def add_arguments(self, parser):
-        # parser.add_argument('username')
+        parser.add_argument('username')
+        parser.add_argument('upper_bound')
         parser.add_argument('substance_type')
         parser.add_argument('substance_unit')
 
     def handle(self, *args, **options):
-        # username = options['username']
+        username = options['username']
+        upper_bound = options['upper_bound']
         substance_type = options['substance_type']
         substance_unit = options['substance_unit']
 
-        # try:
-        #     user = User.objects.get(username=username)
-        # except ObjectDoesNotExist:
-        #     user = User.objects.create(username=username)
-        #     user.first_name = 'Budi'
-        #     user.last_name = 'Ryan'
-        #     user.email = 'budiryan@gmail.com'
-        #     user.set_password('demo')
-        #     user.save()
+        try:
+            user = User.objects.get(name=username.lower())
+        except ObjectDoesNotExist:
+            user = User.objects.create(name=username.lower())
 
         try:
             category = Category.objects.get(name=substance_type.lower())
@@ -42,19 +39,17 @@ class Command(BaseCommand):
         except ObjectDoesNotExist:
             unit = Unit.objects.create(name=substance_unit.lower(), category=category)
 
-        # Delete existing data.
-        # Substance.objects.filter().delete()
-        # Substance.objects.delete()
 
         end_date = date.today()
-        start_date = end_date - timedelta(days=30)
+        start_date = end_date - timedelta(days=7)
         for i in self.get_date_list(start_date, end_date):
-            for _ in range(4):
+            for _ in range(3):
                 SubstanceFactory(
-                    # user=user,
+                    user=user,
                     unit=unit,
                     category=category,
-                    record_date=i
+                    record_date=i,
+                    value = FuzzyInteger(0, int(upper_bound))
                 )
 
     def get_date_list(cls, start, end):

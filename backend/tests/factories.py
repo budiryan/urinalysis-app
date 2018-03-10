@@ -1,26 +1,14 @@
 from datetime import datetime, date, timedelta
-
 from factory import DjangoModelFactory, Sequence, SubFactory
 from factory.fuzzy import FuzzyInteger, FuzzyNaiveDateTime
-
-from django.contrib.auth.models import User
-
-# from ..models import Substance, Category, UserSettings, Unit
-from ..models import Substance, Category, Unit
+from ..models import Substance, Category, Unit, User
 
 
-# class UserFactory(DjangoModelFactory):
-#     class Meta:
-#         model = User
-#
-#     username = Sequence(lambda n: 'user{0}'.format(n))
-#
-#
-# class UserSettingsFactory(DjangoModelFactory):
-#     class Meta:
-#         model = UserSettings
-#
-#     user = SubFactory(UserFactory)
+class UserFactory(DjangoModelFactory):
+    class Meta:
+        model = User
+
+    name = Sequence(lambda n: 'Category{0}'.format(n))
 
 
 class CategoryFactory(DjangoModelFactory):
@@ -42,8 +30,8 @@ class SubstanceFactory(DjangoModelFactory):
     class Meta:
         model = Substance
 
-    # user = SubFactory(UserFactory)
     unit = SubFactory(UnitFactory)
+    user = SubFactory(UserFactory)
     value = FuzzyInteger(0, 8)
     category = SubFactory(CategoryFactory)
     record_date = date.today()
