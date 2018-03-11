@@ -1,7 +1,13 @@
+import datetime
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 
+def get_current_date():
+    return timezone.now().date()
+
+def get_current_time():
+    return timezone.now().time()
 
 # Create your models here.
 class TimeStampedModel(models.Model):
@@ -47,13 +53,13 @@ class SubstanceManager(models.Manager):
 
         return data.values('category__name').annotate(avg_value=models.Avg('value')).order_by('category')
 
-    def avg_by_day(self, start_date, end_date, category):
+    def avg_by_day(self, start_date, end_date, category, user):
         """
         Group objects by record date and take the average of the values.
         """
         data = self.by_date(start_date, end_date)
         return data.values('record_date').annotate(avg_value=models.Avg('value')).order_by('record_date') \
-            .filter(category__name=category)
+            .filter(category__name=category, user__name=user)
 
 
 # Model for storing test result
@@ -64,8 +70,8 @@ class Substance(TimeStampedModel):
     value = models.FloatField(validators=[MaxValueValidator(54054),
                                           MinValueValidator(0)])
     category = models.ForeignKey('Category', on_delete=models.CASCADE)
-    record_date = models.DateField('Date', default=timezone.now().date())
-    record_time = models.TimeField('Time', auto_now_add=timezone.now().time())
+    record_date = models.DateField('Date', default=get_current_date)
+    record_time = models.TimeField('Time', auto_now_add=get_current_time)
     notes = models.TextField('Notes', null=False, blank=True, default='')
 
     def __unicode__(self):

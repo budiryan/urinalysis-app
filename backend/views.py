@@ -32,11 +32,15 @@ class SubstanceList(APIView):
     def get(self, request, format=None):
         num_instance = request.query_params.get('num')
         category = request.query_params.get('category')
+        user = request.query_params.get('user')
 
         substances = Substance.objects.all()
 
         if category is not None:
             substances = substances.filter(category__name=category)
+
+        # if user is not None:
+        #     substances = substances.filter(user__name=user)
 
         if num_instance is not None:
             substances = substances[:int(num_instance)]
@@ -191,7 +195,8 @@ class GetAvgPerDayView(views.APIView):
 
     def get(self, request):
         category = request.query_params.get('category')
-        queryset = util.get_avg_by_day(category)
+        user = request.query_params.get('user')
+        queryset = util.get_avg_by_day(category, user)
         return Response(queryset)
 
 
@@ -200,5 +205,6 @@ class GetStats(views.APIView):
 
     def get(self, request):
         category = request.query_params.get('category')
-        queryset = util.get_stats(category)
+        user = request.query_params.get('user')
+        queryset = util.get_stats(category, user)
         return Response(queryset)

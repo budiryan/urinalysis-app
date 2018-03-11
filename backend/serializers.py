@@ -13,10 +13,11 @@ class SubstanceSerializer(serializers.ModelSerializer):
     unit_name = serializers.CharField(source='unit.name', required=False)
     record_date = serializers.DateField(required=False)
     record_time = serializers.TimeField(format="%H:%M:%S", required=False)
-
+    user_name = serializers.CharField(source='user.name', required=False)
 
     class Meta:
-        fields = ('id', 'unit', 'unit_name', 'value', 'category', 'category_name', 'record_date', 'record_time', 'notes')
+        fields = ('id', 'unit', 'unit_name', 'user', 'user_name', 'value', 'category',
+                  'category_name', 'record_date', 'record_time', 'notes')
         model = Substance
 
 

@@ -35,6 +35,9 @@ public class Substance {
     @SerializedName("notes")
     @Expose
     private String notes;
+    @SerializedName("user")
+    @Expose
+    private String user;
 
     public Substance(Integer id, Integer unit, String unitName, Integer category,
                      String categoryName, Integer value,
@@ -83,6 +86,14 @@ public class Substance {
     public String getCategory_name() {return category_name;}
 
     public String getRecord_date() {return record_date;}
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
 
     public String getRecord_time() {return record_time;}
 

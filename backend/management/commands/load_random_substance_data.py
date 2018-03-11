@@ -2,10 +2,12 @@ from datetime import date, timedelta
 
 from django.core.management.base import BaseCommand
 from django.db.models.base import ObjectDoesNotExist
-from factory.fuzzy import FuzzyInteger
+from factory.fuzzy import FuzzyInteger, FuzzyNaiveDateTime
 
 from ...models import Category, Unit, User
 from ...tests.factories import SubstanceFactory
+
+import datetime
 
 
 class Command(BaseCommand):
@@ -49,6 +51,7 @@ class Command(BaseCommand):
                     unit=unit,
                     category=category,
                     record_date=i,
+                    record_time=FuzzyNaiveDateTime(datetime.datetime.now() - timedelta(hours=24)),
                     value = FuzzyInteger(0, int(upper_bound))
                 )
 

@@ -30,19 +30,21 @@ public interface Api {
 
     @GET("substance")
     Call<List<Substance>> getSubstance(@Query("category") String category,
+                                       @Query("user") String user,
                                        @Query("num") Integer num);
 
     @GET("getavgperday")
-    Call<AveragesPerDay> getAveragePerDay(@Query("category") String category);
+    Call<AveragesPerDay> getAveragePerDay(@Query("category") String category,
+                                          @Query("user") String user);
 
     @GET("getstats")
-    Call<Stats> getStats(@Query("category") String category);
+    Call<Stats> getStats(@Query("category") String category,
+                         @Query("user") String user);
 
     @POST("substance")
     @FormUrlEncoded
-    Call<Substance> saveSubstance(@Field("value") Float value,
-                        @Field("unit") Integer unit,
-                        @Field("category") Integer category,
+    Call<Substance> saveSubstance(@Field("value") Float value, @Field("unit") Integer unit,
+                        @Field("category") Integer category, @Field("user") Integer user,
                         @Field("notes") String notes);
 
 }

@@ -84,7 +84,7 @@ def get_count_by_category(days):
 
 
 def get_avg_by_category(days):
-    now = datetime.datetime.now.date()
+    now = datetime.datetime.now().date()
 
     averages = Substance.objects.avg_by_category(
         (now - datetime.timedelta(days=int(days))), now)
@@ -98,12 +98,15 @@ def get_avg_by_category(days):
     return data
 
 
-def get_avg_by_day(category):
+def get_avg_by_day(category, user):
     # Get the date of the newest data on the table
-    now = Substance.objects.all()[0].record_date
-    earliest = Substance.objects.all().reverse()[0].record_date
-    averages = Substance.objects.avg_by_day(earliest, now, category)
     data = {'dates': [], 'values': [], 'unit': ''}
+    try:
+        now = Substance.objects.filter(user__name=user)[0].record_date
+        earliest = Substance.objects.filter(user__name=user).reverse()[0].record_date
+    except IndexError:
+        return data
+    averages = Substance.objects.avg_by_day(earliest, now, category, user)
     for avg in averages:
         rounded_value = round_value(avg['avg_value'])
         data['values'].append(rounded_value)
@@ -111,21 +114,21 @@ def get_avg_by_day(category):
         date = '{0}/{1}/{2:02}'.format(date.day, date.month, date.year % 100)
         data['dates'].append(date)
     try:
-        temp_unit = Substance.objects.filter(category__name=category)[0].unit;
+        temp_unit = Substance.objects.filter(category__name=category)[0].unit
         data['unit'] = temp_unit.name
-    except:
+    except IndexError:
         data['unit'] = ''
     return data
 
 
-def get_stats(category):
+def get_stats(category, user):
     # Get the date of the newest data on the table
     data = {'avg': '','std': '',
             'latest':'', 'latest_date':'', 'latest_time':'',
             'highest':'', 'highest_date':'', 'highest_time':'',
             'lowest':'', 'lowest_date':'', 'lowest_time':'','unit': ''}
     try:
-        all_substances = Substance.objects.all().filter(category__name=category)
+        all_substances = Substance.objects.all().filter(category__name=category, user__name=user)
         values = np.array([f.value for f in all_substances])
         record_date = np.array([f.record_date for f in all_substances])
         record_time = np.array([f.record_time for f in all_substances])

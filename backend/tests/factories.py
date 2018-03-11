@@ -37,8 +37,3 @@ class SubstanceFactory(DjangoModelFactory):
     record_date = date.today()
     record_time = FuzzyNaiveDateTime(datetime.now() - timedelta(hours=24))
     notes = 'This is a randomly generated dummy urine data'
-
-
-
-
-
