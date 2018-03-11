@@ -18,6 +18,8 @@ import android.widget.Toast;
 import com.example.urinalysis.urinalysis.models.AveragesPerDay;
 import com.example.urinalysis.urinalysis.models.Category;
 import com.example.urinalysis.urinalysis.models.Stats;
+import com.example.urinalysis.urinalysis.models.User;
+import com.example.urinalysis.urinalysis.models.UserCategory;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -51,7 +53,12 @@ public class OverviewFragment extends Fragment {
     private String unit;
 
     // Data for the spinner
-    private ArrayList<String> categories;
+    private String[] categories;
+    private String currentCategory;
+
+    // Data for user spinner
+    private String[] users;
+    private String currentUser;
 
     // For calling the API through retrofit
     private Api api;
@@ -88,8 +95,8 @@ public class OverviewFragment extends Fragment {
         // Some initalization
         chart = view.findViewById(R.id.chart);
         chart.setNoDataText("");
-        categories = new ArrayList<String>();
         final Spinner spinner = view.findViewById(R.id.spinner1);
+        final Spinner spinnerUser = view.findViewById(R.id.spinner2);
         retrofit = new Retrofit.Builder()
                 .baseUrl(Api.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -106,27 +113,35 @@ public class OverviewFragment extends Fragment {
         latestDateView = view.findViewById(R.id.last_reading_date);
 
         // Call to get the list of categories
-        Call <List<Category>> call_categories = api.getCategories();
-        call_categories.enqueue(new Callback<List<Category>>() {
+        Call <UserCategory> call_categories = api.getUserCategory();
+
+        call_categories.enqueue(new Callback<UserCategory>() {
             @Override
-            public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
-                List<Category> categoryBody = response.body();
-                for(Category c: categoryBody){
-                    categories.add(c.getName().substring(0, 1).toUpperCase()
-                            + c.getName().substring(1));
-                }
+            public void onResponse(Call<UserCategory> call, Response<UserCategory> response) {
+                UserCategory userCategory = response.body();
+                users = userCategory.getUsers();
+                categories = userCategory.getCategories();
+
+                // Array adapter for categories
                 final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
                         getActivity(), R.layout.spinner_item, categories);
                 spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
                 spinner.setAdapter(spinnerArrayAdapter);
+
+                // Array adapter for users
+                final ArrayAdapter<String> spinnerArrayAdapterUser = new ArrayAdapter<String>(
+                        getActivity(), R.layout.spinner_item, users);
+                spinnerArrayAdapterUser.setDropDownViewResource(R.layout.spinner_item);
+                spinnerUser.setAdapter(spinnerArrayAdapterUser);
             }
 
             @Override
-            public void onFailure(Call<List<Category>> call, Throwable t) {
-                Toast.makeText(getActivity().getApplicationContext(),
-                        t.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<UserCategory> call, Throwable t) {
+//                Toast.makeText(getActivity().getApplicationContext(),
+//                        t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+
 
         // Spinner click listener
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -134,11 +149,13 @@ public class OverviewFragment extends Fragment {
                                        int position, long id) {
 
                 // On selecting a spinner item
-                String category = parent.getItemAtPosition(position).toString();
+                currentCategory = parent.getItemAtPosition(position).toString();
+
+                if (currentUser == null)
+                    currentUser = spinnerUser.getItemAtPosition(0).toString();
 
                 // Call to get graph data
-                Call<AveragesPerDay> call_graph = api.getAveragePerDay(
-                        category.substring(0, 1).toLowerCase() + category.substring(1));
+                Call<AveragesPerDay> call_graph = api.getAveragePerDay(currentCategory, currentUser);
 
                 // Generate the graph
                 call_graph.enqueue(new Callback<AveragesPerDay>() {
@@ -153,14 +170,13 @@ public class OverviewFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<AveragesPerDay> call, Throwable t) {
-                        Toast.makeText(getActivity().getApplicationContext(),
-                                t.getMessage(), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getActivity().getApplicationContext(),
+//                                t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
 
                 // Fill in the statistics section below graph
-                Call<Stats> call_stats = api.getStats(category.substring(0, 1).toLowerCase()
-                        + category.substring(1));
+                Call<Stats> call_stats = api.getStats(currentCategory, currentUser);
                 call_stats.enqueue(new Callback<Stats>() {
                     @Override
                     public void onResponse(Call<Stats> call, Response<Stats> response) {
@@ -192,10 +208,89 @@ public class OverviewFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<Stats> call, Throwable t) {
-                        Toast.makeText(getActivity().getApplicationContext(),
-                                t.getMessage(), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getActivity().getApplicationContext(),
+//                                t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                //Do nothing
+            }
+        });
+
+
+        // Spinner click listener
+        spinnerUser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+
+                // On selecting a spinner item
+                currentUser = parent.getItemAtPosition(position).toString();
+                if (currentCategory == null)
+                    currentCategory = spinner.getItemAtPosition(0).toString();
+
+                // Call to get graph data
+                Call<AveragesPerDay> call_graph = api.getAveragePerDay(currentCategory, currentUser);
+
+                // Generate the graph
+                call_graph.enqueue(new Callback<AveragesPerDay>() {
+                    @Override
+                    public void onResponse(Call<AveragesPerDay> call, Response<AveragesPerDay> response) {
+                        AveragesPerDay avgPerDay = response.body();
+                        xVal = avgPerDay.getDates();
+                        yVal = avgPerDay.getValues();
+                        unit = avgPerDay.getUnit();
+                        drawChart(chart);
+                    }
+
+                    @Override
+                    public void onFailure(Call<AveragesPerDay> call, Throwable t) {
+//                        Toast.makeText(getActivity().getApplicationContext(),
+//                                t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                // Fill in the statistics section below graph
+                Call<Stats> call_stats = api.getStats(currentCategory, currentUser);
+                call_stats.enqueue(new Callback<Stats>() {
+                    @Override
+                    public void onResponse(Call<Stats> call, Response<Stats> response) {
+                        Stats statsDay = response.body();
+                        avg = statsDay.getAvg();
+                        std = statsDay.getStd();
+                        latest = statsDay.getLatest();
+                        latestDate = statsDay.getLatest_date();
+                        latestTime = statsDay.getLatest_time();
+                        highest = statsDay.getHighest();
+                        highestDate = statsDay.getHighest_date();
+                        highestTime = statsDay.getHighest_time();
+                        lowest = statsDay.getLowest();
+                        lowestDate = statsDay.getLowest_date();
+                        lowestTime = statsDay.getLowest_time();
+                        unit = statsDay.getUnit();
+
+                        avgVal.setText(String.format("%s %s", avg.toString(), unit));
+                        stdVal.setText(String.format("%s %s", std.toString(), unit));
+                        lowestVal.setText(String.format("%s %s", lowest.toString(), unit));
+                        highestVal.setText(String.format("%s %s", highest.toString(), unit));
+                        latestVal.setText(String.format("%s %s", latest.toString(), unit));
+
+                        latestDateView.setText(String.format("%s %s", latestDate, latestTime));
+                        highestDateView.setText(String.format("%s %s", highestDate, highestTime));
+                        lowestDateView.setText(String.format("%s %s", lowestDate, lowestTime));
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Stats> call, Throwable t) {
+//                        Toast.makeText(getActivity().getApplicationContext(),
+//                                t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
 
             }
 

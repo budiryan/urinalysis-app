@@ -401,7 +401,7 @@ public class ConnectFragment extends StatedFragment{
                     public void onClick(DialogInterface dialog, int which) {
                         try{
                             Call<Substance> save_substance = api.saveSubstance(sensorValue,
-                                    5, 13, "Test posting from android! Count number: " + String.valueOf(sendCount));
+                                    5, 13,5 , "Test posting from android! Count number: " + String.valueOf(sendCount));
                                 save_substance.enqueue(new Callback<Substance>() {
                                     @Override
                                     public void onResponse(Call<Substance> call, Response<Substance> response) {

@@ -5,6 +5,8 @@ import com.example.urinalysis.urinalysis.models.Category;
 import com.example.urinalysis.urinalysis.models.Stats;
 import com.example.urinalysis.urinalysis.models.Substance;
 import com.example.urinalysis.urinalysis.models.Unit;
+import com.example.urinalysis.urinalysis.models.User;
+import com.example.urinalysis.urinalysis.models.UserCategory;
 
 import java.util.List;
 
@@ -28,14 +30,20 @@ public interface Api {
     @GET("unit")
     Call<List<Unit>> getUnits();
 
+    @GET("user")
+    Call<List<User>> getUsers();
+
     @GET("substance")
     Call<List<Substance>> getSubstance(@Query("category") String category,
-                                       @Query("user") String user,
-                                       @Query("num") Integer num);
+                                       @Query("num") Integer num,
+                                       @Query("user") String user);
 
     @GET("getavgperday")
     Call<AveragesPerDay> getAveragePerDay(@Query("category") String category,
                                           @Query("user") String user);
+
+    @GET("getusercategory")
+    Call<UserCategory> getUserCategory();
 
     @GET("getstats")
     Call<Stats> getStats(@Query("category") String category,

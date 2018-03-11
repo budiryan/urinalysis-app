@@ -24,6 +24,7 @@ import com.example.urinalysis.urinalysis.models.Category;
 import com.example.urinalysis.urinalysis.models.Stats;
 import com.example.urinalysis.urinalysis.models.Substance;
 import com.example.urinalysis.urinalysis.models.Unit;
+import com.example.urinalysis.urinalysis.models.UserCategory;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -46,12 +47,11 @@ public class HistoryFragment extends Fragment implements SwipeRefreshLayout.OnRe
     private Retrofit retrofit;
 
     // Data for the spinner
-    private ArrayList<String> categories;
+    private String[] categories;
+    private String[] users;
+    private String currentCategory;
+    private String currentUser;
     private ArrayList<Integer> categoriesId;
-
-    // Data for sending post request
-    private ArrayList<Integer> unitsId;
-    private ArrayList<String> units;
 
     // Data to display on the body
     private List<Substance> substances;
@@ -73,11 +73,9 @@ public class HistoryFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         api = retrofit.create(Api.class);
-        categories = new ArrayList<>();
-        categoriesId = new ArrayList<>();
-        units =  new ArrayList<>();
-        unitsId = new ArrayList<>();
         final Spinner spinner = view.findViewById(R.id.spinner_history);
+        final Spinner spinnerUser = view.findViewById(R.id.spinner_history_user);
+
         final Context context = getActivity().getApplicationContext();
 
         mRecyclerView =  view.findViewById(R.id.fragment_history_recycler_view);
@@ -90,28 +88,31 @@ public class HistoryFragment extends Fragment implements SwipeRefreshLayout.OnRe
         swipeLayout.setOnRefreshListener(this);
 
         // Call to get the list of categories
-        Call<List<Unit>> call_categories = api.getUnits();
-        call_categories.enqueue(new Callback<List<Unit>>() {
+        Call<UserCategory> callUserCategory = api.getUserCategory();
+
+        callUserCategory.enqueue(new Callback<UserCategory>() {
             @Override
-            public void onResponse(Call<List<Unit>> call, Response<List<Unit>> response) {
-                List<Unit> uniBody = response.body();
-                for(Unit c: uniBody){
-                    categories.add(c.getCategoryName().substring(0, 1).toUpperCase()
-                            + c.getCategoryName().substring(1));
-                    categoriesId.add(c.getCategory());
-                    units.add(c.getName());
-                    unitsId.add(c.getId());
-                }
+            public void onResponse(Call<UserCategory> call, Response<UserCategory> response) {
+                UserCategory userCategory = response.body();
+                categories = userCategory.getCategories();
+                users = userCategory.getUsers();
+
+                // Array adapter for categories
                 final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
                         getActivity(), R.layout.spinner_item, categories);
                 spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
                 spinner.setAdapter(spinnerArrayAdapter);
+
+                // Array adapter for users
+                final ArrayAdapter<String> spinnerArrayAdapterUser = new ArrayAdapter<String>(
+                        getActivity(), R.layout.spinner_item, users);
+                spinnerArrayAdapterUser.setDropDownViewResource(R.layout.spinner_item);
+                spinnerUser.setAdapter(spinnerArrayAdapterUser);
             }
 
             @Override
-            public void onFailure(Call<List<Unit>> call, Throwable t) {
-                Toast.makeText(getActivity().getApplicationContext(),
-                        t.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<UserCategory> call, Throwable t) {
+                // Do nothing
             }
         });
 
@@ -121,12 +122,14 @@ public class HistoryFragment extends Fragment implements SwipeRefreshLayout.OnRe
                                        int position, long id) {
 
                 // On selecting a spinner item
-                String category = parent.getItemAtPosition(position).toString();
-                String query_category = category.substring(0, 1).toLowerCase() +
-                        category.substring(1);
+                currentCategory = parent.getItemAtPosition(position).toString();
+
+                if(currentUser == null)
+                    currentUser = spinnerUser.getItemAtPosition(0).toString();
 
                 // Call to get the history given that category
-                Call<List<Substance>> call_categories = api.getSubstance(query_category, null);
+                Call<List<Substance>> call_categories = api.getSubstance(currentCategory, null, currentUser);
+
                 call_categories.enqueue(new Callback<List<Substance>>() {
                     @Override
                     public void onResponse(Call<List<Substance>> call, Response<List<Substance>> response) {
@@ -142,20 +145,44 @@ public class HistoryFragment extends Fragment implements SwipeRefreshLayout.OnRe
                                 t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+            }
 
-//                Call<Substance> save_substance = api.saveSubstance((float)8.0, unitsId.get(0), categoriesId.get(0), "Test posting from android!");
-//                save_substance.enqueue(new Callback<Substance>() {
-//                    @Override
-//                    public void onResponse(Call<Substance> call, Response<Substance> response) {
-//                        Log.i(TAG, "post submitted to API.");
-//                        Log.d(TAG, "response is: " + response.body());
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Call<Substance> call, Throwable t) {
-//                        Log.d(TAG, "ERROR SENDING");
-//                    }
-//                });
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                //Do nothing
+            }
+        });
+
+
+        // Spinner click listener
+        spinnerUser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+
+                // On selecting a spinner item
+                currentUser = parent.getItemAtPosition(position).toString();
+
+                if(currentCategory == null)
+                    currentCategory = spinner.getItemAtPosition(0).toString();
+
+                // Call to get the history given that category
+                Call<List<Substance>> call_categories = api.getSubstance(currentCategory, null, currentUser);
+
+                call_categories.enqueue(new Callback<List<Substance>>() {
+                    @Override
+                    public void onResponse(Call<List<Substance>> call, Response<List<Substance>> response) {
+                        substances = response.body();
+                        mAdapter = new HistoryAdapter(context, substances);
+                        mRecyclerView.setAdapter(mAdapter);
+                        mAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Substance>> call, Throwable t) {
+                        Toast.makeText(getActivity().getApplicationContext(),
+                                t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
