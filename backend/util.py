@@ -130,6 +130,7 @@ def get_stats(category, user):
     try:
         all_substances = Substance.objects.all().filter(category__name=category, user__name=user)
         values = np.array([f.value for f in all_substances])
+        print("values are: ", values)
         record_date = np.array([f.record_date for f in all_substances])
         record_time = np.array([f.record_time for f in all_substances])
 

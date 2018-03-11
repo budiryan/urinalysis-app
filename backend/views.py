@@ -26,8 +26,8 @@ class SubstanceList(APIView):
         if category is not None:
             substances = substances.filter(category__name=category)
 
-        # if user is not None:
-        #     substances = substances.filter(user__name=user)
+        if user is not None:
+            substances = substances.filter(user__name=user)
 
         if num_instance is not None:
             substances = substances[:int(num_instance)]
