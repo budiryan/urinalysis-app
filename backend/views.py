@@ -216,6 +216,17 @@ class UserDetail(APIView):
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class GetUserCategory(views.APIView):
+    renderer_classes = [renderers.JSONRenderer]
+
+    def get(self, request):
+        data = {'users': [], 'categories': []}
+        users = User.objects.all()
+        categories = Category.objects.all()
+        data['users'] = [u.name for u in users]
+        data['categories'] = [c.name for c in categories]
+        return Response(data)
+
 
 class GetAvgPerDayView(views.APIView):
     renderer_classes = [renderers.JSONRenderer]
