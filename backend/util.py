@@ -134,7 +134,7 @@ def get_stats(category, user):
         record_date = np.array([f.record_date for f in all_substances])
         record_time = np.array([f.record_time for f in all_substances])
 
-        data['avg'] = np.average(values)
+        data['avg'] = round(np.average(values), 2)
         data['std'] = round(np.std(values), 2)
         data['latest'] = values[0]
         data['latest_date'] = '{0}/{1}/{2:02}'.format(record_date[0].day, record_date[0].month, record_date[0].year % 100)
