@@ -1,11 +1,17 @@
 from rest_framework import serializers
-from .models import Category, Substance, Unit
+from .models import Category, Substance, Unit, User
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Category
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = '__all__'
+        model = User
 
 
 class SubstanceSerializer(serializers.ModelSerializer):

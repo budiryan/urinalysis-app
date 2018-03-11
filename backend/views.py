@@ -6,22 +6,9 @@ from rest_framework import renderers
 from rest_framework import views
 from rest_framework.views import APIView
 
-from .models import Substance, Category, Unit
+from .models import Substance, Category, Unit, User
 from . import util
 from . import serializers
-
-
-class CategoryView(generics.ListCreateAPIView):
-    renderer_classes = [renderers.JSONRenderer]
-    serializer_class = serializers.CategorySerializer
-
-    def get_queryset(self):
-        num_instance = self.request.query_params.get('num')
-        if num_instance is not None:
-            queryset = Category.objects.all()[:int(num_instance)]
-        else:
-            queryset = Category.objects.all()
-        return queryset
 
 
 class SubstanceList(APIView):
@@ -86,14 +73,6 @@ class SubstanceDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-
-class CategoryInstanceView(generics.RetrieveAPIView):
-    renderer_classes = [renderers.JSONRenderer]
-    model = Category
-    serializer_class = serializers.CategorySerializer
-    queryset = Category.objects.all()
-
-
 class CategoryDetail(APIView):
     """
     Retrieve, update or delete a user instance.
@@ -144,7 +123,7 @@ class CategoryList(APIView):
 
 class UnitList(APIView):
     """
-    List all users, or create a new user.
+    List all users, or create a new unit detail.
     """
     renderer_classes = [renderers.JSONRenderer]
     def get(self, request, format=None):
@@ -163,7 +142,7 @@ class UnitList(APIView):
 
 class UnitDetail(APIView):
     """
-    Retrieve, update or delete a user instance.
+    Retrieve, update or delete a unit instance.
     """
     renderer_classes = [renderers.JSONRenderer]
     def get_object(self, pk):
@@ -187,6 +166,54 @@ class UnitDetail(APIView):
     def delete(self, request, pk, format=None):
         unit = self.get_object(pk)
         unit.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UserList(APIView):
+    """
+    List all users, or create a new user.
+    """
+    renderer_classes = [renderers.JSONRenderer]
+    def get(self, request, format=None):
+        users = User.objects.all()
+
+        serializer = serializers.UserSerializer(users, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = serializers.UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserDetail(APIView):
+    """
+    Retrieve, update or delete a user instance.
+    """
+    renderer_classes = [renderers.JSONRenderer]
+    def get_object(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        user = self.get_object(pk)
+        user = serializers.UserSerializer(user)
+        return Response(user.data)
+
+    def put(self, request, pk, format=None):
+        serializer = serializers.UserSerializer(data=request.DATA)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        user = self.get_object(pk)
+        user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
