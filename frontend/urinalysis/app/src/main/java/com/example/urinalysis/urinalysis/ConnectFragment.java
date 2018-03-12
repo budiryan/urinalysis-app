@@ -77,7 +77,7 @@ public class ConnectFragment extends StatedFragment{
 
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // "random" unique identifier
 
-    // #defines for identifying shared types between calling functions
+    // defines for identifying shared types between calling functions
     private final static int REQUEST_ENABLE_BT = 1; // used to identify adding bluetooth names
     private final static int MESSAGE_READ = 2; // used in bluetooth handler to identify message update
     private final static int CONNECTING_STATUS = 3; // used in bluetooth handler to identify message status
@@ -87,6 +87,11 @@ public class ConnectFragment extends StatedFragment{
     private Api api;
     private Retrofit retrofit;
     private Integer sendCount;
+
+    // Getting the data obtained from the embedded device
+    private String currentUser;
+    private String currentGlucoseValue;
+    private String currentUrineColorValue;
 
     @SuppressLint("HandlerLeak")
     @Nullable
@@ -119,11 +124,17 @@ public class ConnectFragment extends StatedFragment{
 
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity());
         View mView = getLayoutInflater().inflate(R.layout.dialog_send_data, null);
-        Button mLogin = (Button) mView.findViewById(R.id.btnLogin);
+        Button ButtonSendData = mView.findViewById(R.id.btn_send);
+        Button ButtonCancel = mView.findViewById(R.id.btn_cancel);
 
         mBuilder.setView(mView);
         final AlertDialog dialog = mBuilder.create();
-        dialog.show();
+
+        ButtonCancel.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
 
         // Ask for location permission if not already allowed
         if(ContextCompat.checkSelfPermission(getActivity(),
@@ -141,6 +152,9 @@ public class ConnectFragment extends StatedFragment{
                         e.printStackTrace();
                     }
                     try {
+                        String[] stringArray = readMessage.split("\\|");
+                        if (stringArray[0].equals("Urine"))
+                            dialog.show();
                         sensorData.setText(readMessage);
                     }
                     catch (Exception e){

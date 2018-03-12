@@ -5,8 +5,10 @@
     <string name="lowest">Lowest:</string>
     <string name="highest">Highest:</string>
     <string name="latest">Latest:</string>
-    <string name="login">Login</string>
-    <string name="email">Email</string>
+    <string name="add_data">Add New data</string>
+    <string name="notes">Add note</string>
     <string name="password">Password</string>
-    <string name="login_label">Login</string>
+    <string name="send_label">Send Data</string>
+    <string name="cancel_label">Cancel</string>
+    <string name="report">Report</string>
 </resources>
