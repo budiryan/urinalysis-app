@@ -116,6 +116,15 @@ public class ConnectFragment extends StatedFragment{
 
         sensorData = view.findViewById(R.id.sensorData);
 
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity());
+        View mView = getLayoutInflater().inflate(R.layout.dialog_send_data, null);
+        Button mLogin = (Button) mView.findViewById(R.id.btnLogin);
+
+        mBuilder.setView(mView);
+        final AlertDialog dialog = mBuilder.create();
+        dialog.show();
+
         // Ask for location permission if not already allowed
         if(ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
@@ -132,8 +141,7 @@ public class ConnectFragment extends StatedFragment{
                         e.printStackTrace();
                     }
                     try {
-                        sensorDataValue = Float.parseFloat(readMessage);
-                        sensorData.setText(String.valueOf(sensorDataValue));
+                        sensorData.setText(readMessage);
                     }
                     catch (Exception e){
                         Log.e(TAG, "sensor data not valid", e);
