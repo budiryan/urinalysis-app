@@ -34,6 +34,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.urinalysis.urinalysis.models.Substance;
+import com.example.urinalysis.urinalysis.models.UserCategory;
+import com.example.urinalysis.urinalysis.models.UserCategoryUnit;
 import com.inthecheesefactory.thecheeselibrary.fragment.support.v4.app.StatedFragment;
 
 import java.io.IOException;
@@ -73,6 +75,7 @@ public class ConnectFragment extends StatedFragment{
     public static ConnectedThread mConnectedThread; // bluetooth background worker thread to send and receive data
     public static BluetoothSocket mBTSocket = null; // bi-directional client-to-client data path
     private TextView sensorData;
+    private TextView report;
     private Float sensorDataValue;
 
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // "random" unique identifier
@@ -93,6 +96,10 @@ public class ConnectFragment extends StatedFragment{
     private String currentGlucoseValue;
     private String currentUrineColorValue;
 
+    private AlertDialog dialog;
+
+
+
     @SuppressLint("HandlerLeak")
     @Nullable
     @Override
@@ -109,7 +116,6 @@ public class ConnectFragment extends StatedFragment{
         mBluetoothStatus = view.findViewById(R.id.bluetoothStatus);
         mOnBtn = view.findViewById(R.id.on);
         mOffBtn = view.findViewById(R.id.off);
-        mSendDataBtn = view.findViewById(R.id.send_data);
         mListPairedDevicesBtn = view.findViewById(R.id.PairedBtn);
         mClearBtn = view.findViewById(R.id.clear);
         mBTArrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1);
@@ -124,11 +130,11 @@ public class ConnectFragment extends StatedFragment{
 
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity());
         View mView = getLayoutInflater().inflate(R.layout.dialog_send_data, null);
-        Button ButtonSendData = mView.findViewById(R.id.btn_send);
+        report = mView.findViewById(R.id.send_data_report);
         Button ButtonCancel = mView.findViewById(R.id.btn_cancel);
 
         mBuilder.setView(mView);
-        final AlertDialog dialog = mBuilder.create();
+        dialog = mBuilder.create();
 
         ButtonCancel.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -142,34 +148,6 @@ public class ConnectFragment extends StatedFragment{
             ActivityCompat.requestPermissions(getActivity(),
                     new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
 
-        mHandler = new Handler(){
-            public void handleMessage(android.os.Message msg){
-                if(msg.what == MESSAGE_READ){
-                    String readMessage = "..";
-                    try {
-                        readMessage = new String((byte[]) msg.obj, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        String[] stringArray = readMessage.split("\\|");
-                        if (stringArray[0].equals("Urine"))
-                            dialog.show();
-                        sensorData.setText(readMessage);
-                    }
-                    catch (Exception e){
-                        Log.e(TAG, "sensor data not valid", e);
-                    }
-                }
-
-                if(msg.what == CONNECTING_STATUS){
-                    if(msg.arg1 == 1)
-                        mBluetoothStatus.setText("Connected to Device: " + (String)(msg.obj));
-                    else
-                        mBluetoothStatus.setText("Connection Failed");
-                }
-            }
-        };
 
         if (mBTArrayAdapter == null) {
             // Device does not support Bluetooth
@@ -206,14 +184,6 @@ public class ConnectFragment extends StatedFragment{
                     listPairedDevices(v);
                 }
             });
-
-            mSendDataBtn.setOnClickListener(new View.OnClickListener(){
-                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-                @Override
-                public void onClick(View v){
-                    sendData(v, sensorDataValue);
-                }
-            });
         }
 
         if (!mBTAdapter.isEnabled()){
@@ -223,10 +193,64 @@ public class ConnectFragment extends StatedFragment{
             mBluetoothStatus.setText("Bluetooth is Enabled");
         }
 
+
+        // Call to get the list of users, categories, units
+        Call <UserCategoryUnit> callUserCategoryUnit = api.getUserCategoryUnit();
+        callUserCategoryUnit.enqueue(new Callback<UserCategoryUnit>() {
+            @Override
+            public void onResponse(Call<UserCategoryUnit> call, Response<UserCategoryUnit> response) {
+                UserCategoryUnit userCategoryUnit = response.body();
+                Log.d(TAG, "DEBUG example user: " + userCategoryUnit.toString());
+
+                mHandler = new Handler(){
+                    public void handleMessage(android.os.Message msg){
+                        if(msg.what == MESSAGE_READ){
+                            String readMessage = "..";
+                            try {
+                                readMessage = new String((byte[]) msg.obj, "UTF-8");
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                String[] messageArray = readMessage.split("\\|");
+                                if (messageArray[0].equals("Urine")) {
+                                    String glucoseVal = String.format("Glucose value: %s mg/dl", messageArray[2]);
+                                    String colorVal = String.format("Urine Color value: %s", messageArray[3]);
+                                    String reportString = glucoseVal + "\n" + colorVal;
+
+                                    report.setText(reportString);
+                                    currentUser = messageArray[1];
+                                    currentGlucoseValue = String.valueOf(messageArray[2]);
+                                    currentUrineColorValue = String.valueOf(messageArray[3]);
+                                    dialog.show();
+                                }
+                                sensorData.setText(readMessage);
+                            }
+                            catch (Exception e){
+                                Log.e(TAG, "sensor data not valid", e);
+                            }
+                        }
+
+                        if(msg.what == CONNECTING_STATUS){
+                            if(msg.arg1 == 1)
+                                mBluetoothStatus.setText("Connected to Device: " + (String)(msg.obj));
+                            else
+                                mBluetoothStatus.setText("Connection Failed");
+                        }
+                    }
+                };
+            }
+
+            @Override
+            public void onFailure(Call<UserCategoryUnit> call, Throwable t) {
+
+            }
+        });
+
+
         listPairedDevices(view);
         return view;
     }
-
 
     final BroadcastReceiver blReceiver = new BroadcastReceiver() {
         @Override

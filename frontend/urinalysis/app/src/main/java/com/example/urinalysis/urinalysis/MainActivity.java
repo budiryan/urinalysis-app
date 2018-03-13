@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
+import com.example.urinalysis.urinalysis.models.Category;
+import com.example.urinalysis.urinalysis.models.User;
 import com.inthecheesefactory.thecheeselibrary.fragment.support.v4.app.bus.ActivityResultBus;
 import com.inthecheesefactory.thecheeselibrary.fragment.support.v4.app.bus.ActivityResultEvent;
 
@@ -19,6 +21,10 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager mViewPager;
 
     private Toolbar toolbar;
+
+    private User users;
+
+    private Category categories;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

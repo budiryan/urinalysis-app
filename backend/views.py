@@ -228,6 +228,20 @@ class GetUserCategory(views.APIView):
         return Response(data)
 
 
+class GetUserCategoryUnit(views.APIView):
+    renderer_classes = [renderers.JSONRenderer]
+
+    def get(self, request):
+        data = {'users': [], 'categories':[], 'units': []}
+        users = User.objects.all()
+        categories = Category.objects.all()
+        units = Unit.objects.all()
+        data['users'] = users.values()
+        data['units'] = units.values()
+        data['categories'] = categories.values()
+        return Response(data)
+
+
 class GetAvgPerDayView(views.APIView):
     renderer_classes = [renderers.JSONRenderer]
 
@@ -246,3 +260,4 @@ class GetStats(views.APIView):
         user = request.query_params.get('user')
         queryset = util.get_stats(category, user)
         return Response(queryset)
+

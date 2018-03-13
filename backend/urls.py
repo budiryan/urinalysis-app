@@ -8,6 +8,7 @@ urlpatterns = [
     path('getavgperday', views.GetAvgPerDayView.as_view()),
     path('getstats', views.GetStats.as_view()),
     path('getusercategory', views.GetUserCategory.as_view()),
+    path('getusercategoryunit', views.GetUserCategoryUnit.as_view()),
     path('category', views.CategoryList.as_view()),
     path('category/<int:pk>/', views.CategoryDetail.as_view()),
     path('substance', views.SubstanceList.as_view()),

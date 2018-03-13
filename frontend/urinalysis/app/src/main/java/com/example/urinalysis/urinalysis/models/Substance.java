@@ -25,7 +25,7 @@ public class Substance {
     private String category_name;
     @SerializedName("value")
     @Expose
-    private Integer value;
+    private Float value;
     @SerializedName("record_date")
     @Expose
     private String record_date;
@@ -40,7 +40,7 @@ public class Substance {
     private String user;
 
     public Substance(Integer id, Integer unit, String unitName, Integer category,
-                     String categoryName, Integer value,
+                     String categoryName, Float value,
                      String recordDate, String recordTime, String notes) {
         this.id = id;
         this.value = value;
@@ -61,7 +61,7 @@ public class Substance {
         return unit_name;
     }
 
-    public Integer getValue() {
+    public Float getValue() {
         return value;
     }
 
@@ -117,7 +117,7 @@ public class Substance {
         this.category_name = category_name;
     }
 
-    public void setValue(Integer value) {
+    public void setValue(Float value) {
         this.value = value;
     }
 

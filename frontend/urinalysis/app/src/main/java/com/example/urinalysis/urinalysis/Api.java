@@ -7,6 +7,7 @@ import com.example.urinalysis.urinalysis.models.Substance;
 import com.example.urinalysis.urinalysis.models.Unit;
 import com.example.urinalysis.urinalysis.models.User;
 import com.example.urinalysis.urinalysis.models.UserCategory;
+import com.example.urinalysis.urinalysis.models.UserCategoryUnit;
 
 import java.util.List;
 
@@ -44,6 +45,9 @@ public interface Api {
 
     @GET("getusercategory")
     Call<UserCategory> getUserCategory();
+
+    @GET("getusercategoryunit")
+    Call<UserCategoryUnit> getUserCategoryUnit();
 
     @GET("getstats")
     Call<Stats> getStats(@Query("category") String category,
