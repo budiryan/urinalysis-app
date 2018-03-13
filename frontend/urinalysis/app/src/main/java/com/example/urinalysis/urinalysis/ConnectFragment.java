@@ -28,12 +28,16 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.urinalysis.urinalysis.models.Category;
 import com.example.urinalysis.urinalysis.models.Substance;
+import com.example.urinalysis.urinalysis.models.Unit;
+import com.example.urinalysis.urinalysis.models.User;
 import com.example.urinalysis.urinalysis.models.UserCategory;
 import com.example.urinalysis.urinalysis.models.UserCategoryUnit;
 import com.inthecheesefactory.thecheeselibrary.fragment.support.v4.app.StatedFragment;
@@ -43,6 +47,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -65,7 +70,6 @@ public class ConnectFragment extends StatedFragment{
     private Button mOnBtn;
     private Button mOffBtn;
     private Button mListPairedDevicesBtn;
-    private Button mSendDataBtn;
     private Button mClearBtn;
     public static BluetoothAdapter mBTAdapter;
     private Set<BluetoothDevice> mPairedDevices;
@@ -76,7 +80,6 @@ public class ConnectFragment extends StatedFragment{
     public static BluetoothSocket mBTSocket = null; // bi-directional client-to-client data path
     private TextView sensorData;
     private TextView report;
-    private Float sensorDataValue;
 
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // "random" unique identifier
 
@@ -89,14 +92,19 @@ public class ConnectFragment extends StatedFragment{
     // For calling the API through retrofit
     private Api api;
     private Retrofit retrofit;
-    private Integer sendCount;
 
     // Getting the data obtained from the embedded device
-    private String currentUser;
-    private String currentGlucoseValue;
-    private String currentUrineColorValue;
+    private Integer currentUserId;
+    private Float currentGlucoseValue;
+    private Float currentUrineColorValue;
+    private List<User> users;
+    private List<Category> categories;
+    private List<Unit> units;
 
     private AlertDialog dialog;
+    private Button buttonCancel;
+    private Button buttonSend;
+    private EditText notesEditText;
 
 
 
@@ -111,7 +119,6 @@ public class ConnectFragment extends StatedFragment{
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         api = retrofit.create(Api.class);
-        sendCount = 0;
 
         mBluetoothStatus = view.findViewById(R.id.bluetoothStatus);
         mOnBtn = view.findViewById(R.id.on);
@@ -131,16 +138,12 @@ public class ConnectFragment extends StatedFragment{
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity());
         View mView = getLayoutInflater().inflate(R.layout.dialog_send_data, null);
         report = mView.findViewById(R.id.send_data_report);
-        Button ButtonCancel = mView.findViewById(R.id.btn_cancel);
+        buttonCancel = mView.findViewById(R.id.btn_cancel);
+        buttonSend = mView.findViewById(R.id.btn_send);
+        notesEditText = mView.findViewById(R.id.note);
 
         mBuilder.setView(mView);
         dialog = mBuilder.create();
-
-        ButtonCancel.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
 
         // Ask for location permission if not already allowed
         if(ContextCompat.checkSelfPermission(getActivity(),
@@ -200,7 +203,9 @@ public class ConnectFragment extends StatedFragment{
             @Override
             public void onResponse(Call<UserCategoryUnit> call, Response<UserCategoryUnit> response) {
                 UserCategoryUnit userCategoryUnit = response.body();
-                Log.d(TAG, "DEBUG example user: " + userCategoryUnit.toString());
+                users = userCategoryUnit.getUsers();
+                categories = userCategoryUnit.getCategories();
+                units = userCategoryUnit.getUnits();
 
                 mHandler = new Handler(){
                     public void handleMessage(android.os.Message msg){
@@ -214,14 +219,14 @@ public class ConnectFragment extends StatedFragment{
                             try {
                                 String[] messageArray = readMessage.split("\\|");
                                 if (messageArray[0].equals("Urine")) {
+                                    currentUserId = Integer.valueOf(messageArray[1]);
+                                    currentGlucoseValue = Float.valueOf(messageArray[2]);
+                                    currentUrineColorValue = Float.valueOf(messageArray[3]);
+                                    String userVal = String.format("User: %s", String.valueOf(users.get(currentUserId).getName()));
                                     String glucoseVal = String.format("Glucose value: %s mg/dl", messageArray[2]);
                                     String colorVal = String.format("Urine Color value: %s", messageArray[3]);
-                                    String reportString = glucoseVal + "\n" + colorVal;
-
+                                    String reportString = "\n" + userVal + "\n" + glucoseVal + "\n" + colorVal;
                                     report.setText(reportString);
-                                    currentUser = messageArray[1];
-                                    currentGlucoseValue = String.valueOf(messageArray[2]);
-                                    currentUrineColorValue = String.valueOf(messageArray[3]);
                                     dialog.show();
                                 }
                                 sensorData.setText(readMessage);
@@ -244,6 +249,28 @@ public class ConnectFragment extends StatedFragment{
             @Override
             public void onFailure(Call<UserCategoryUnit> call, Throwable t) {
 
+            }
+        });
+
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        buttonSend.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v){
+                // Send 2 times for glucose and urine color
+                String note = notesEditText.getText().toString();
+                Log.d(TAG, "User: " + String.valueOf(users.get(currentUserId).getId()));
+                Log.d(TAG, "Units: " + String.valueOf(units.get(0).getId()));
+                Log.d(TAG, "Categories: " + String.valueOf(categories.get(0).getId()));
+                Log.d(TAG, "Note: " + note);
+                // Send glucose
+                sendData(v, users.get(currentUserId).getId(), units.get(0).getId(), categories.get(0).getId(), currentGlucoseValue, note);
+                // Send urine color
+                sendData(v, users.get(currentUserId).getId(), units.get(1).getId(), categories.get(1).getId(), currentUrineColorValue, note);
+                dialog.dismiss();
             }
         });
 
@@ -436,50 +463,23 @@ public class ConnectFragment extends StatedFragment{
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void sendData(View view, Float sensorDataValue){
-        AlertDialog.Builder builder;
-        builder = new AlertDialog.Builder(getActivity());
-        final Float sensorValue = getSensorValue();
-        builder.setTitle("Add New Test Data")
-                .setMessage("Send new glucose value of " + String.valueOf(sensorDataValue)
-                        + " mg/dl to Database?")
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        try{
-                            Call<Substance> save_substance = api.saveSubstance(sensorValue,
-                                    5, 13,5 , "Test posting from android! Count number: " + String.valueOf(sendCount));
-                                save_substance.enqueue(new Callback<Substance>() {
-                                    @Override
-                                    public void onResponse(Call<Substance> call, Response<Substance> response) {
-                                        Log.d(TAG, "response is: " + response.body().toString());
-                                        sendCount += 1;
-                                        Toast.makeText(getActivity().getApplicationContext(),
-                                                "Data Succesfully Sent to Server, value is: "
-                                                        + sensorValue, Toast.LENGTH_LONG).show();
-                                    }
+    private void sendData(View view, Integer userId, Integer unitId, Integer categoryId, Float value, String note){
 
-                                    @Override
-                                    public void onFailure(Call<Substance> call, Throwable t) {
-                                        Log.d(TAG, "ERROR SENDING");
-                                    }
-                                });
-                        }
-                        catch (Exception e){
-                            Log.e(TAG, "Error", e);
-                        }
+                Call<Substance> save_substance = api.saveSubstance(value, unitId, categoryId, userId , note);
+                save_substance.enqueue(new Callback<Substance>() {
+                    @Override
+                    public void onResponse(Call<Substance> call, Response<Substance> response) {
+                        Log.d(TAG, "response is: " + response.body().toString());
+                        Toast.makeText(getActivity().getApplicationContext(),
+                                String.format("Data succesfully sent to server for user: %s", users.get(currentUserId).getName())
+                                        , Toast.LENGTH_LONG).show();
                     }
-                })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // do nothing
+
+                    @Override
+                    public void onFailure(Call<Substance> call, Throwable t) {
+                        Log.d(TAG, "ERROR SENDING");
                     }
-                })
-                .show();
+                });
     }
-
-    private Float getSensorValue(){
-        return sensorDataValue;
-    }
-
 
 }

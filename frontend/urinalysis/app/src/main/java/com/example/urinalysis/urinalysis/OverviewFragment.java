@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.urinalysis.urinalysis.models.AveragesPerDay;
-import com.example.urinalysis.urinalysis.models.Category;
 import com.example.urinalysis.urinalysis.models.Stats;
-import com.example.urinalysis.urinalysis.models.User;
 import com.example.urinalysis.urinalysis.models.UserCategory;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
@@ -31,6 +28,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.example.urinalysis.urinalysis.util.MyXAxisValueFormatter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import retrofit2.Call;
@@ -48,6 +46,7 @@ public class OverviewFragment extends Fragment {
 
     // For storing the chart data
     private LineChart chart;
+    private XAxis xAxis;
     private Float[] yVal;
     private String[] xVal;
     private String unit;
@@ -93,8 +92,6 @@ public class OverviewFragment extends Fragment {
         View view = inflater.inflate(R.layout.overview_fragment, container, false);
 
         // Some initalization
-        chart = view.findViewById(R.id.chart);
-        chart.setNoDataText("");
         final Spinner spinner = view.findViewById(R.id.spinner1);
         final Spinner spinnerUser = view.findViewById(R.id.spinner2);
         retrofit = new Retrofit.Builder()
@@ -102,7 +99,7 @@ public class OverviewFragment extends Fragment {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         api = retrofit.create(Api.class);
-
+        chart = view.findViewById(R.id.chart);
         avgVal = view.findViewById(R.id.average_value);
         stdVal = view.findViewById(R.id.std_value);
         lowestVal = view.findViewById(R.id.lowest_value);
@@ -137,8 +134,8 @@ public class OverviewFragment extends Fragment {
 
             @Override
             public void onFailure(Call<UserCategory> call, Throwable t) {
-//                Toast.makeText(getActivity().getApplicationContext(),
-//                        t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity().getApplicationContext(),
+                        t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -170,8 +167,8 @@ public class OverviewFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<AveragesPerDay> call, Throwable t) {
-//                        Toast.makeText(getActivity().getApplicationContext(),
-//                                t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity().getApplicationContext(),
+                                t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -208,8 +205,8 @@ public class OverviewFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<Stats> call, Throwable t) {
-//                        Toast.makeText(getActivity().getApplicationContext(),
-//                                t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity().getApplicationContext(),
+                                t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -248,8 +245,8 @@ public class OverviewFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<AveragesPerDay> call, Throwable t) {
-//                        Toast.makeText(getActivity().getApplicationContext(),
-//                                t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity().getApplicationContext(),
+                                t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -286,8 +283,8 @@ public class OverviewFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<Stats> call, Throwable t) {
-//                        Toast.makeText(getActivity().getApplicationContext(),
-//                                t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity().getApplicationContext(),
+                                t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -307,11 +304,15 @@ public class OverviewFragment extends Fragment {
 
 
     public void drawChart(LineChart chart){
-        final XAxis xAxis = chart.getXAxis();
+        chart.notifyDataSetChanged();
+
+        xAxis = chart.getXAxis();
         xAxis.setDrawGridLines(false);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.urinalysis_text_light));
         xAxis.setAvoidFirstLastClipping(true);
+        xAxis.setGranularity(1f); // minimum axis-step (interval) is 1
+        setChartData();
 
         YAxis leftAxis = chart.getAxisLeft();
         leftAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.urinalysis_text_light));
@@ -324,7 +325,16 @@ public class OverviewFragment extends Fragment {
         chart.setGridBackgroundColor(Color.parseColor("#FFFFFF"));
 
         Legend legend = chart.getLegend();
-        setChartData();
+
+        chart.setPinchZoom(true);
+        chart.setHardwareAccelerationEnabled(true);
+        chart.setNoDataTextColor(getResources().getColor(R.color.urinalysis_text));
+        chart.animateY(1000, Easing.EasingOption.EaseOutCubic);
+        chart.fitScreen();
+        chart.setDescription(null);
+        chart.setVisibleXRangeMaximum(20);
+        chart.invalidate();
+
 
     }
 
@@ -335,34 +345,19 @@ public class OverviewFragment extends Fragment {
 
         if (data.getEntryCount() != 0) {
             chart.setData(data);
+            xAxis.setValueFormatter(new MyXAxisValueFormatter(xVal));
         } else {
             chart.setData(null);
         }
-        chart.setPinchZoom(true);
-        chart.setHardwareAccelerationEnabled(true);
-        chart.setNoDataTextColor(getResources().getColor(R.color.urinalysis_text));
-        chart.animateY(1000, Easing.EasingOption.EaseOutCubic);
-        chart.invalidate();
-        chart.notifyDataSetChanged();
-        chart.fitScreen();
-        chart.setDescription(null);
-        chart.setVisibleXRangeMaximum(20);
+
         chart.moveViewToX(data.getXMax());
-
-        XAxis xAxis = chart.getXAxis();
-        xAxis.setGranularity(1f); // minimum axis-step (interval) is 1
-        xAxis.setValueFormatter(new MyXAxisValueFormatter(xVal));
-
     }
 
     private LineData generateData() {
         List<Entry> yValEntry = new ArrayList<>();
-
         // Day view
-        for (int i = 0; i < yVal.length; i++) {
+        for (int i = 0; i < yVal.length; i++)
             yValEntry.add(new Entry(i, yVal[i]));
-        }
-
         LineData data = new LineData(generateLineDataSet(yValEntry,
                 ContextCompat.getColor(getContext(), R.color.urinalysis_pink)));
         return data;
