@@ -4,6 +4,7 @@ import com.example.urinalysis.urinalysis.models.AveragesPerDay;
 import com.example.urinalysis.urinalysis.models.Category;
 import com.example.urinalysis.urinalysis.models.Stats;
 import com.example.urinalysis.urinalysis.models.Substance;
+import com.example.urinalysis.urinalysis.models.SuggestedWaterIntake;
 import com.example.urinalysis.urinalysis.models.Unit;
 import com.example.urinalysis.urinalysis.models.User;
 import com.example.urinalysis.urinalysis.models.UserCategory;
@@ -52,6 +53,9 @@ public interface Api {
     @GET("getstats")
     Call<Stats> getStats(@Query("category") String category,
                          @Query("user") String user);
+
+    @GET("suggestedwaterintake")
+    Call<SuggestedWaterIntake> getSuggestedWaterIntake();
 
     @POST("substance")
     @FormUrlEncoded
