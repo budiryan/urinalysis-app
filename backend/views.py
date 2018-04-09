@@ -266,18 +266,11 @@ class SuggestedWaterIntake(views.APIView):
     renderer_classes = [renderers.JSONRenderer]
 
     def get(self, request):
-        data = {'suggested_water_intake': ''}
+        data = {'suggested_water_intake': '', 'previous_test_date': '', 'previous_test_time': '',
+                'current_test_date': '', 'current_test_time': '', 'urine_color_difference': ''}
         urine_color_tests = Substance.objects.all().filter(category__name='urine color')
 
-        # Timestamp for marking test result before sleeping
-        timestamp = datetime.datetime.now().replace(hour=20, minute=0, second=0, microsecond=0).time()
-
-        current_test = None
-        # Find the closest PM urine color
-        for test in urine_color_tests:
-            if test.record_time > timestamp:
-                current_test = test
-                break
+        current_test = urine_color_tests[0]
 
         previous_day = datetime.datetime.combine(current_test.record_date - datetime.timedelta(hours=24), current_test.record_time)
 
@@ -294,6 +287,12 @@ class SuggestedWaterIntake(views.APIView):
                 previous_test = test
 
         urine_color_difference = current_test.value - previous_test.value
+
+        data['previous_test_date'] = previous_test.record_date
+        data['previous_test_time'] = previous_test.record_time
+        data['current_test_date'] = current_test.record_date
+        data['current_test_time'] = current_test.record_time
+        data['urine_color_difference'] = urine_color_difference
 
         # Knowing the 24 hour urine color difference, calculate the suggested water intake based on the formula
         if urine_color_difference < -4.0:
