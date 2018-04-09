@@ -155,3 +155,8 @@ def get_stats(category, user):
     except:
         print('query error, data will be blank')
     return data
+
+
+def get_tip_of_the_day():
+    data = {'water_intake': ''}
+

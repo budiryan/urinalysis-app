@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from .models import Substance, Category, Unit, User
 from . import util
 from . import serializers
-
+import datetime
 
 class SubstanceList(APIView):
     """
@@ -260,4 +260,67 @@ class GetStats(views.APIView):
         user = request.query_params.get('user')
         queryset = util.get_stats(category, user)
         return Response(queryset)
+    
 
+class SuggestedWaterIntake(views.APIView):
+    renderer_classes = [renderers.JSONRenderer]
+
+    def get(self, request):
+        data = {'suggested_water_intake': ''}
+        urine_color_tests = Substance.objects.all().filter(category__name='urine color')
+
+        # Timestamp for marking test result before sleeping
+        timestamp = datetime.datetime.now().replace(hour=20, minute=0, second=0, microsecond=0).time()
+
+        current_test = None
+        # Find the closest PM urine color
+        for test in urine_color_tests:
+            if test.record_time > timestamp:
+                current_test = test
+                break
+
+        previous_day = datetime.datetime.combine(current_test.record_date - datetime.timedelta(hours=24), current_test.record_time)
+
+        # Calculate time difference between previous_day and the entire test set
+        smallest_time_difference = None
+        previous_test = None
+
+        for test in urine_color_tests:
+            test_date_time = datetime.datetime.combine(test.record_date, test.record_time)
+            current_time_difference = abs(test_date_time - previous_day)
+
+            if (smallest_time_difference is None) or (current_time_difference < smallest_time_difference):
+                smallest_time_difference = current_time_difference
+                previous_test = test
+
+        urine_color_difference = current_test.value - previous_test.value
+
+        # Knowing the 24 hour urine color difference, calculate the suggested water intake based on the formula
+        if urine_color_difference < -4.0:
+            data['suggested_water_intake'] = 1500 + (-4.0 - urine_color_difference) * 100
+
+        elif (urine_color_difference >= -4.0) and (urine_color_difference < -3.0):
+            data['suggested_water_intake'] = 1400 + (-3.0 - urine_color_difference) * 100
+
+        elif (urine_color_difference >= -3.0) and (urine_color_difference < -2.0):
+            data['suggested_water_intake'] = 1260 + (-2.0 - urine_color_difference) * 140
+
+        elif (urine_color_difference >= -2.0) and (urine_color_difference < -1.0):
+            data['suggested_water_intake'] = 500 + (-1 - urine_color_difference) * 760
+
+        elif (urine_color_difference >= -1.0) and (urine_color_difference < 0.0):
+            data['suggested_water_intake'] = -300 - (urine_color_difference * 800)
+
+        elif (urine_color_difference >= 0.0) and (urine_color_difference < 1.0):
+            data['suggested_water_intake'] = -300 - (urine_color_difference * 200)
+
+        elif (urine_color_difference >= 1.0) and (urine_color_difference < 2.0):
+            data['suggested_water_intake'] = -500 - (urine_color_difference - 1) * 800
+
+        elif (urine_color_difference >= 2.0) and (urine_color_difference < 3.0):
+            data['suggested_water_intake'] = -1300 - (urine_color_difference - 2) * 100
+
+        elif urine_color_difference >= 3.0:
+            data['suggested_water_intake'] = -1400 * (urine_color_difference - 3) * 100
+
+        return Response(data)

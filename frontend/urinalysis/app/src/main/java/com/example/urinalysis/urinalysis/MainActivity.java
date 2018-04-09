@@ -1,6 +1,5 @@
 package com.example.urinalysis.urinalysis;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -39,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         SectionPageAdapter adapter = new SectionPageAdapter(getSupportFragmentManager());
         adapter.addFragment(new OverviewFragment(), "Overview");
         adapter.addFragment(new HistoryFragment(), "History");
+        adapter.addFragment(new RecommendationFragment(), "Tips");
         adapter.addFragment(new ConnectFragment(), "Connect");
         viewPager.setAdapter(adapter);
 
@@ -48,8 +48,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.d(TAG, "onCreate: starting...");
-
 
         mViewPager = (ViewPager) findViewById(R.id.container);
         setupViewPager(mViewPager);

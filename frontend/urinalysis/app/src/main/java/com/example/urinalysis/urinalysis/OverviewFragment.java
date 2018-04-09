@@ -28,7 +28,6 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.example.urinalysis.urinalysis.util.MyXAxisValueFormatter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import retrofit2.Call;

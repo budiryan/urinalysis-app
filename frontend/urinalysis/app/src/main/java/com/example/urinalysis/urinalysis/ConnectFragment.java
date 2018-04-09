@@ -9,9 +9,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
@@ -29,7 +27,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,7 +35,6 @@ import com.example.urinalysis.urinalysis.models.Category;
 import com.example.urinalysis.urinalysis.models.Substance;
 import com.example.urinalysis.urinalysis.models.Unit;
 import com.example.urinalysis.urinalysis.models.User;
-import com.example.urinalysis.urinalysis.models.UserCategory;
 import com.example.urinalysis.urinalysis.models.UserCategoryUnit;
 import com.inthecheesefactory.thecheeselibrary.fragment.support.v4.app.StatedFragment;
 
@@ -63,7 +59,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ConnectFragment extends StatedFragment{
     private static final String TAG = "ConnectFragment";
-
 
     // GUI Components
     private TextView mBluetoothStatus;
@@ -190,10 +185,10 @@ public class ConnectFragment extends StatedFragment{
         }
 
         if (!mBTAdapter.isEnabled()){
-            mBluetoothStatus.setText("Bluetooth is Disabled");
+            mBluetoothStatus.setText("Bluetooth is disabled");
         }
         else {
-            mBluetoothStatus.setText("Bluetooth is Enabled");
+            mBluetoothStatus.setText("Bluetooth is enabled");
         }
 
 
@@ -218,7 +213,7 @@ public class ConnectFragment extends StatedFragment{
                             }
                             try {
                                 String[] messageArray = readMessage.split("\\|");
-                                if (messageArray[0].equals("Urine")) {
+                                if (messageArray.length == 4) {
                                     currentUserId = Integer.valueOf(messageArray[1]);
                                     currentGlucoseValue = Float.valueOf(messageArray[2]);
                                     currentUrineColorValue = Float.valueOf(messageArray[3]);
@@ -238,9 +233,9 @@ public class ConnectFragment extends StatedFragment{
 
                         if(msg.what == CONNECTING_STATUS){
                             if(msg.arg1 == 1)
-                                mBluetoothStatus.setText("Connected to Device: " + (String)(msg.obj));
+                                mBluetoothStatus.setText("Connected to device: " + (String)(msg.obj));
                             else
-                                mBluetoothStatus.setText("Connection Failed");
+                                mBluetoothStatus.setText("Connection failed");
                         }
                     }
                 };
