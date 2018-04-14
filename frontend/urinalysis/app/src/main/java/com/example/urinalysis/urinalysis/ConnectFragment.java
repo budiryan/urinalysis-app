@@ -333,25 +333,6 @@ public class ConnectFragment extends StatedFragment{
                 }
             }
         }
-
-        /* Call this from the main activity to send data to the remote device */
-        public void write(String input) {
-            byte[] bytes = input.getBytes();           //converts entered String into bytes
-            try {
-                Toast.makeText(getActivity().getApplicationContext(),
-                        "Sending Data to Arduino..", Toast.LENGTH_SHORT).show();
-                mmOutStream.write(bytes);
-                Toast.makeText(getActivity().getApplicationContext(),
-                        "Data sent.", Toast.LENGTH_SHORT).show();
-            } catch (IOException e) { }
-        }
-
-        /* Call this from the main activity to shutdown the connection */
-        public void cancel() {
-            try {
-                mmSocket.close();
-            } catch (IOException e) { }
-        }
     }
 
     private static BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
@@ -409,7 +390,7 @@ public class ConnectFragment extends StatedFragment{
                                     "Socket creation failed", Toast.LENGTH_SHORT).show();
                         }
                     }
-                    if(fail == false) {
+                    if(!fail) {
                         mConnectedThread = new ConnectedThread(mBTSocket);
                         mConnectedThread.start();
 
