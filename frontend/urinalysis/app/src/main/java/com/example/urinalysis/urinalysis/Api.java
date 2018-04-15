@@ -55,7 +55,7 @@ public interface Api {
                          @Query("user") String user);
 
     @GET("suggestedwaterintake")
-    Call<SuggestedWaterIntake> getSuggestedWaterIntake();
+    Call<SuggestedWaterIntake> getSuggestedWaterIntake(@Query("user") String user);
 
     @POST("substance")
     @FormUrlEncoded

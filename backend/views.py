@@ -265,10 +265,13 @@ class GetStats(views.APIView):
 class SuggestedWaterIntake(views.APIView):
     renderer_classes = [renderers.JSONRenderer]
 
+
     def get(self, request):
+        user = request.query_params.get('user')
         data = {'suggested_water_intake': '', 'previous_test_date': '', 'previous_test_time': '',
                 'current_test_date': '', 'current_test_time': '', 'urine_color_difference': ''}
-        urine_color_tests = Substance.objects.all().filter(category__name='urine color')
+
+        urine_color_tests = Substance.objects.all().filter(category__name='urine color', user__name=user)
 
         current_test = urine_color_tests[0]
 
