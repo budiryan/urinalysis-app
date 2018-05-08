@@ -21,10 +21,10 @@ class Command(BaseCommand):
         parser.add_argument('substance_unit')
 
     def handle(self, *args, **options):
-        username = options['username']
         upper_bound = options['upper_bound']
         substance_type = options['substance_type']
         substance_unit = options['substance_unit']
+        username = options['username']
 
         try:
             user = User.objects.get(name=username.lower())

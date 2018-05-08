@@ -90,13 +90,13 @@ public class RecommendationFragment extends Fragment {
                 call_suggestedwaterintake.enqueue(new Callback<SuggestedWaterIntake>() {
                     @Override
                     public void onResponse(Call<SuggestedWaterIntake> call, Response<SuggestedWaterIntake> response) {
-                        Toast.makeText(getActivity().getApplicationContext(), currentUser, Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
                         SuggestedWaterIntake suggestedWaterIntakeCall = response.body();
                         suggestedWaterIntake = suggestedWaterIntakeCall.getSuggestedWaterIntake();
 
-                        if (suggestedWaterIntake < 0.0){
+                        if (suggestedWaterIntake <= 0.0){
                             messageText.setText(okayMessage);
+                            suggestedWaterIntakeText.setText("");
                         }
                         else {
                             messageText.setText(notOkayMessage);
