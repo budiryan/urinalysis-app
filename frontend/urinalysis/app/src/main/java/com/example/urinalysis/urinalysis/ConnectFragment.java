@@ -139,6 +139,8 @@ public class ConnectFragment extends StatedFragment{
 
         mBuilder.setView(mView);
         dialog = mBuilder.create();
+        dialog.setCancelable(false); // prevents dialog for being closed by pressing back
+        dialog.setCanceledOnTouchOutside(false); // prevents dialog for being closed by tapping
 
         // Ask for location permission if not already allowed
         if(ContextCompat.checkSelfPermission(getActivity(),
@@ -433,9 +435,9 @@ public class ConnectFragment extends StatedFragment{
             for (BluetoothDevice device : mPairedDevices)
                 mBTArrayAdapter.add(device.getName() + "\n" + device.getAddress());
         }
-        else
-            Toast.makeText(getActivity().getApplicationContext(),
-                    "Bluetooth not on", Toast.LENGTH_SHORT).show();
+//        else
+//            Toast.makeText(getActivity().getApplicationContext(),
+//                    "Bluetooth not on", Toast.LENGTH_SHORT).show();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
